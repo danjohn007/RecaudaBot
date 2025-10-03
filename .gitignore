@@ -1,0 +1,41 @@
+# RecaudaBot .gitignore
+
+# Configuration files with sensitive data
+config/config.php.local
+
+# Uploaded files
+public/uploads/*
+!public/uploads/.gitkeep
+
+# Cache and temporary files
+*.tmp
+*.cache
+*.log
+
+# IDE specific files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS specific files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Backup files
+*.bak
+*.backup
+*.sql.gz
+
+# Node modules (if you add any build tools later)
+node_modules/
+
+# Composer vendor (if you migrate to Composer later)
+vendor/
+
+# Environment files
+.env
+.env.local
