@@ -1,0 +1,62 @@
+<?php
+/**
+ * Configuration file for RecaudaBot
+ * Auto-detects URL base and database settings
+ */
+
+// Database Configuration
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'recaudabot');
+define('DB_USER', 'root');
+define('DB_PASS', '');
+define('DB_CHARSET', 'utf8mb4');
+
+// Auto-detect URL Base
+$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://';
+$host = $_SERVER['HTTP_HOST'];
+$script = $_SERVER['SCRIPT_NAME'];
+$base_path = str_replace('/index.php', '', $script);
+$base_path = str_replace('/public/index.php', '', $base_path);
+
+define('BASE_URL', $protocol . $host . $base_path);
+define('PUBLIC_URL', BASE_URL . '/public');
+
+// Application Settings
+define('APP_NAME', 'RecaudaBot');
+define('APP_VERSION', '1.0.0');
+define('TIMEZONE', 'America/Mexico_City');
+
+// Session Configuration
+define('SESSION_LIFETIME', 7200); // 2 hours
+define('SESSION_NAME', 'RECAUDABOT_SESSION');
+
+// Security
+define('HASH_ALGO', PASSWORD_BCRYPT);
+define('HASH_COST', 12);
+
+// File Upload
+define('MAX_FILE_SIZE', 5242880); // 5MB
+define('UPLOAD_PATH', __DIR__ . '/../public/uploads/');
+define('ALLOWED_EXTENSIONS', ['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx']);
+
+// Pagination
+define('ITEMS_PER_PAGE', 20);
+
+// Email Configuration
+define('SMTP_HOST', 'localhost');
+define('SMTP_PORT', 587);
+define('SMTP_USER', '');
+define('SMTP_PASS', '');
+define('FROM_EMAIL', 'noreply@municipio.gob.mx');
+define('FROM_NAME', 'RecaudaBot');
+
+// Payment Gateway (Example)
+define('PAYMENT_GATEWAY_KEY', 'your_key_here');
+define('PAYMENT_GATEWAY_SECRET', 'your_secret_here');
+
+// Timezone
+date_default_timezone_set(TIMEZONE);
+
+// Error Reporting (change to 0 in production)
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
