@@ -1,0 +1,7 @@
+en la importación de la sentencia SQL https://github.com/copilot/c/5aa76f7d-050f-4f00-9012-4ee4e215e8e0 hicieron falta estos index:
+
+-- ALTER TABLE traffic_fines ADD INDEX idx_folio (folio); -- Ya existe, línea comentada
+ALTER TABLE traffic_fines ADD INDEX idx_driver_name (driver_name);
+
+-- ALTER TABLE civic_fines ADD INDEX idx_folio (folio); -- Comenta si ya existe
+-- ALTER TABLE civic_fines ADD INDEX idx_infractor_name (infractor_name); -- Comentada porque la columna no existe
