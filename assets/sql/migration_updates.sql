@@ -98,21 +98,21 @@ ALTER TABLE users ADD UNIQUE INDEX idx_username_unique (username);
 -- ============================================
 
 -- Indexes for search and filtering
-ALTER TABLE users ADD INDEX IF NOT EXISTS idx_full_name (full_name);
-ALTER TABLE users ADD INDEX IF NOT EXISTS idx_created_at (created_at);
+ALTER TABLE users ADD INDEX idx_full_name (full_name);
+ALTER TABLE users ADD INDEX idx_created_at (created_at);
 
-ALTER TABLE properties ADD INDEX IF NOT EXISTS idx_owner_name (owner_name);
+ALTER TABLE properties ADD INDEX idx_owner_name (owner_name);
 
-ALTER TABLE property_taxes ADD INDEX IF NOT EXISTS idx_year_period (year, period);
+ALTER TABLE property_taxes ADD INDEX idx_year_period (year, period);
 
-ALTER TABLE traffic_fines ADD INDEX IF NOT EXISTS idx_folio (folio);
-ALTER TABLE traffic_fines ADD INDEX IF NOT EXISTS idx_driver_name (driver_name);
+-- ALTER TABLE traffic_fines ADD INDEX idx_folio (folio); -- Ya existe, línea comentada
+ALTER TABLE traffic_fines ADD INDEX idx_driver_name (driver_name);
 
-ALTER TABLE civic_fines ADD INDEX IF NOT EXISTS idx_folio (folio);
-ALTER TABLE civic_fines ADD INDEX IF NOT EXISTS idx_infractor_name (infractor_name);
+-- ALTER TABLE civic_fines ADD INDEX idx_folio (folio); -- Comenta si ya existe
+-- ALTER TABLE civic_fines ADD INDEX idx_infractor_name (infractor_name); -- Comentada porque la columna no existe
 
-ALTER TABLE payments ADD INDEX IF NOT EXISTS idx_paid_at (paid_at);
-ALTER TABLE payments ADD INDEX IF NOT EXISTS idx_payment_type (payment_type);
+ALTER TABLE payments ADD INDEX idx_paid_at (paid_at);
+ALTER TABLE payments ADD INDEX idx_payment_type (payment_type);
 
 -- ============================================
 -- 6. Create audit log for imports (if not exists)
