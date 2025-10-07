@@ -5,7 +5,7 @@
  */
 
 class ReportController extends Controller {
-    private $db;
+    protected $db;
     
     public function __construct() {
         parent::__construct();

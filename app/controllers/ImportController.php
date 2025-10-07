@@ -5,7 +5,7 @@
  */
 
 class ImportController extends Controller {
-    private $db;
+    protected $db;
     private $allowedTypes = ['csv', 'xml', 'xlsx', 'xls'];
     
     public function __construct() {
