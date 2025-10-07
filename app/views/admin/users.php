@@ -17,7 +17,6 @@
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Usuario</th>
                                 <th>Nombre Completo</th>
                                 <th>Email</th>
                                 <th>Rol</th>
@@ -31,7 +30,6 @@
                                 <?php foreach ($users as $user): ?>
                                     <tr>
                                         <td><?php echo htmlspecialchars($user['id']); ?></td>
-                                        <td><?php echo htmlspecialchars($user['username'] ?? 'N/A'); ?></td>
                                         <td><?php echo htmlspecialchars($user['full_name']); ?></td>
                                         <td><?php echo htmlspecialchars($user['email']); ?></td>
                                         <td>
@@ -63,16 +61,37 @@
                                         </td>
                                         <td><?php echo date('d/m/Y', strtotime($user['created_at'])); ?></td>
                                         <td>
+                                            <a href="<?php echo BASE_URL; ?>/admin/usuarios/ver/<?php echo $user['id']; ?>" 
+                                               class="btn btn-sm btn-info" title="Ver">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
                                             <a href="<?php echo BASE_URL; ?>/admin/usuarios/editar/<?php echo $user['id']; ?>" 
                                                class="btn btn-sm btn-primary" title="Editar">
                                                 <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <?php if ($user['status'] === 'active'): ?>
+                                            <a href="<?php echo BASE_URL; ?>/admin/usuarios/desactivar/<?php echo $user['id']; ?>" 
+                                               class="btn btn-sm btn-warning" title="Desactivar"
+                                               onclick="return confirm('¿Desea desactivar este usuario?')">
+                                                <i class="bi bi-lock"></i>
+                                            </a>
+                                            <?php else: ?>
+                                            <a href="<?php echo BASE_URL; ?>/admin/usuarios/activar/<?php echo $user['id']; ?>" 
+                                               class="btn btn-sm btn-success" title="Activar">
+                                                <i class="bi bi-unlock"></i>
+                                            </a>
+                                            <?php endif; ?>
+                                            <a href="<?php echo BASE_URL; ?>/admin/usuarios/eliminar/<?php echo $user['id']; ?>" 
+                                               class="btn btn-sm btn-danger" title="Eliminar"
+                                               onclick="return confirm('¿Está seguro de eliminar este usuario? Esta acción no se puede deshacer.')">
+                                                <i class="bi bi-trash"></i>
                                             </a>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="8" class="text-center">No hay usuarios registrados</td>
+                                    <td colspan="7" class="text-center">No hay usuarios registrados</td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>

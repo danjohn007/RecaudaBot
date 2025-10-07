@@ -11,7 +11,17 @@
                 <i class="bi bi-person-circle fs-1 text-primary mb-3"></i>
                 <h3><?php echo htmlspecialchars($user['full_name']); ?></h3>
                 <p class="text-muted"><?php echo htmlspecialchars($user['email']); ?></p>
-                <span class="badge bg-primary"><?php echo ucfirst($user['role']); ?></span>
+                <span class="badge bg-primary"><?php 
+                    $roleText = $user['role'];
+                    if ($user['role'] === 'citizen') {
+                        $roleText = 'Ciudadano';
+                    } elseif ($user['role'] === 'admin') {
+                        $roleText = 'Administrador';
+                    } elseif ($user['role'] === 'municipal_area') {
+                        $roleText = 'Área Municipal';
+                    }
+                    echo $roleText; 
+                ?></span>
             </div>
         </div>
 

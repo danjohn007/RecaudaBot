@@ -104,6 +104,30 @@
     <div class="col-md-6 mb-4">
         <div class="card shadow">
             <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-pie-chart"></i> Distribución de Obligaciones Pendientes</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="obligationsChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-bar-chart-line"></i> Tendencia de Recaudación (Últimos 6 Meses)</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="trendChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header">
                 <h5 class="mb-0"><i class="bi bi-link-45deg"></i> Enlaces Rápidos</h5>
             </div>
             <div class="card-body">
@@ -190,4 +214,81 @@ new Chart(ctx, {
     }
 });
 <?php endif; ?>
+
+// Chart for pending obligations distribution (Pie Chart)
+const obligationsCtx = document.getElementById('obligationsChart');
+new Chart(obligationsCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Impuestos Prediales', 'Multas de Tránsito', 'Multas Cívicas', 'Licencias'],
+        datasets: [{
+            label: 'Obligaciones Pendientes',
+            data: [
+                <?php echo isset($stats['pending_taxes']) ? $stats['pending_taxes'] : 0; ?>,
+                <?php echo isset($stats['pending_traffic_fines']) ? $stats['pending_traffic_fines'] : 0; ?>,
+                <?php echo isset($stats['pending_civic_fines']) ? $stats['pending_civic_fines'] : 0; ?>,
+                <?php echo isset($stats['pending_licenses']) ? $stats['pending_licenses'] : 0; ?>
+            ],
+            backgroundColor: [
+                'rgba(54, 162, 235, 0.7)',
+                'rgba(255, 206, 86, 0.7)',
+                'rgba(255, 99, 132, 0.7)',
+                'rgba(75, 192, 192, 0.7)'
+            ],
+            borderColor: [
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(255, 99, 132, 1)',
+                'rgba(75, 192, 192, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom',
+            }
+        }
+    }
+});
+
+// Chart for revenue trend (Line Chart)
+const trendCtx = document.getElementById('trendChart');
+new Chart(trendCtx, {
+    type: 'line',
+    data: {
+        labels: ['Mes -5', 'Mes -4', 'Mes -3', 'Mes -2', 'Mes -1', 'Mes Actual'],
+        datasets: [{
+            label: 'Recaudación Total ($)',
+            data: <?php echo isset($stats['monthly_trend']) ? json_encode($stats['monthly_trend']) : '[0, 0, 0, 0, 0, ' . ($stats['month_revenue'] ?? 0) . ']'; ?>,
+            borderColor: 'rgba(75, 192, 192, 1)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            fill: true,
+            tension: 0.4
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: true,
+                position: 'top'
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    callback: function(value) {
+                        return '$' + value.toLocaleString();
+                    }
+                }
+            }
+        }
+    }
+});
 </script>
