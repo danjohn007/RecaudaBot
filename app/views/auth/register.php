@@ -7,18 +7,10 @@
                 </h2>
 
                 <form method="POST" action="<?php echo BASE_URL; ?>/register" id="registerForm">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="username" class="form-label">Nombre de Usuario *</label>
-                            <input type="text" class="form-control" id="username" name="username" 
-                                   value="<?php echo $_SESSION['old']['username'] ?? ''; ?>" required>
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="email" class="form-label">Correo Electrónico *</label>
-                            <input type="email" class="form-control" id="email" name="email" 
-                                   value="<?php echo $_SESSION['old']['email'] ?? ''; ?>" required>
-                        </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Correo Electrónico *</label>
+                        <input type="email" class="form-control" id="email" name="email" 
+                               value="<?php echo $_SESSION['old']['email'] ?? ''; ?>" required>
                     </div>
 
                     <div class="mb-3">
@@ -36,9 +28,11 @@
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label for="phone" class="form-label">Teléfono</label>
+                            <label for="phone" class="form-label">Teléfono *</label>
                             <input type="tel" class="form-control" id="phone" name="phone" 
-                                   value="<?php echo $_SESSION['old']['phone'] ?? ''; ?>">
+                                   maxlength="10" pattern="[0-9]{10}"
+                                   value="<?php echo $_SESSION['old']['phone'] ?? ''; ?>" required>
+                            <small class="text-muted">10 dígitos</small>
                         </div>
                     </div>
 
@@ -89,6 +83,7 @@ document.getElementById('registerForm').addEventListener('submit', function(e) {
     const password = document.getElementById('password').value;
     const confirmPassword = document.getElementById('confirm_password').value;
     const curp = document.getElementById('curp').value;
+    const phone = document.getElementById('phone').value;
     
     if (password !== confirmPassword) {
         e.preventDefault();
@@ -105,6 +100,12 @@ document.getElementById('registerForm').addEventListener('submit', function(e) {
     if (curp.length !== 18) {
         e.preventDefault();
         alert('El CURP debe tener 18 caracteres');
+        return;
+    }
+    
+    if (!/^\d{10}$/.test(phone)) {
+        e.preventDefault();
+        alert('El teléfono debe tener exactamente 10 dígitos numéricos');
         return;
     }
 });
