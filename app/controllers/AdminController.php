@@ -52,10 +52,21 @@ class AdminController extends Controller {
         $pendingTaxes = $propertyTaxModel->count("status IN ('pending', 'overdue')");
         
         $trafficFineModel = new TrafficFine();
-        $pendingFines = $trafficFineModel->count("status = 'pending'");
+        $pendingTrafficFines = $trafficFineModel->count("status = 'pending'");
+        
+        $civicFineModel = new CivicFine();
+        $pendingCivicFines = $civicFineModel->count("status = 'pending'");
         
         $licenseModel = new BusinessLicense();
         $pendingLicenses = $licenseModel->count("status = 'pending'");
+        
+        // Monthly trend for the last 6 months
+        $monthlyTrend = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $monthStart = date('Y-m-01', strtotime("-$i months"));
+            $monthEnd = date('Y-m-t', strtotime("-$i months"));
+            $monthlyTrend[] = $this->paymentModel->getTotalRevenue($monthStart, $monthEnd);
+        }
         
         return [
             'total_revenue' => $totalRevenue,
@@ -64,8 +75,11 @@ class AdminController extends Controller {
             'revenue_by_type' => $revenueByType,
             'total_users' => $totalUsers,
             'pending_taxes' => $pendingTaxes,
-            'pending_fines' => $pendingFines,
-            'pending_licenses' => $pendingLicenses
+            'pending_fines' => $pendingTrafficFines + $pendingCivicFines,
+            'pending_traffic_fines' => $pendingTrafficFines,
+            'pending_civic_fines' => $pendingCivicFines,
+            'pending_licenses' => $pendingLicenses,
+            'monthly_trend' => $monthlyTrend
         ];
     }
     
@@ -180,5 +194,135 @@ class AdminController extends Controller {
         
         fclose($output);
         exit;
+    }
+    
+    public function viewUser($id) {
+        $this->requireRole('admin');
+        
+        $user = $this->userModel->findById($id);
+        
+        if (!$user) {
+            $_SESSION['error'] = 'Usuario no encontrado';
+            $this->redirect('/admin/usuarios');
+        }
+        
+        $data = [
+            'title' => 'Ver Usuario - ' . APP_NAME,
+            'user' => $user
+        ];
+        
+        $this->view('layout/header', $data);
+        $this->view('admin/users/view', $data);
+        $this->view('layout/footer');
+    }
+    
+    public function editUser($id) {
+        $this->requireRole('admin');
+        
+        $user = $this->userModel->findById($id);
+        
+        if (!$user) {
+            $_SESSION['error'] = 'Usuario no encontrado';
+            $this->redirect('/admin/usuarios');
+        }
+        
+        $data = [
+            'title' => 'Editar Usuario - ' . APP_NAME,
+            'user' => $user
+        ];
+        
+        $this->view('layout/header', $data);
+        $this->view('admin/users/edit', $data);
+        $this->view('layout/footer');
+    }
+    
+    public function updateUser($id) {
+        $this->requireRole('admin');
+        
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirect('/admin/usuarios');
+        }
+        
+        $data = [
+            'full_name' => $_POST['full_name'] ?? '',
+            'email' => $_POST['email'] ?? '',
+            'phone' => $_POST['phone'] ?? '',
+            'role' => $_POST['role'] ?? 'citizen'
+        ];
+        
+        if ($this->userModel->update($id, $data)) {
+            $this->auditLog->log('user_updated', 'Usuario actualizado: ' . $id);
+            $_SESSION['success'] = 'Usuario actualizado correctamente';
+        } else {
+            $_SESSION['error'] = 'Error al actualizar usuario';
+        }
+        
+        $this->redirect('/admin/usuarios');
+    }
+    
+    public function activateUser($id) {
+        $this->requireRole('admin');
+        
+        $user = $this->userModel->findById($id);
+        
+        if (!$user) {
+            $_SESSION['error'] = 'Usuario no encontrado';
+            $this->redirect('/admin/usuarios');
+        }
+        
+        if ($this->userModel->update($id, ['status' => 'active'])) {
+            $this->auditLog->log('user_activated', 'Usuario activado: ' . $id);
+            $_SESSION['success'] = 'Usuario activado correctamente';
+        } else {
+            $_SESSION['error'] = 'Error al activar usuario';
+        }
+        
+        $this->redirect('/admin/usuarios');
+    }
+    
+    public function deactivateUser($id) {
+        $this->requireRole('admin');
+        
+        $user = $this->userModel->findById($id);
+        
+        if (!$user) {
+            $_SESSION['error'] = 'Usuario no encontrado';
+            $this->redirect('/admin/usuarios');
+        }
+        
+        if ($this->userModel->update($id, ['status' => 'inactive'])) {
+            $this->auditLog->log('user_deactivated', 'Usuario desactivado: ' . $id);
+            $_SESSION['success'] = 'Usuario desactivado correctamente';
+        } else {
+            $_SESSION['error'] = 'Error al desactivar usuario';
+        }
+        
+        $this->redirect('/admin/usuarios');
+    }
+    
+    public function deleteUser($id) {
+        $this->requireRole('admin');
+        
+        $user = $this->userModel->findById($id);
+        
+        if (!$user) {
+            $_SESSION['error'] = 'Usuario no encontrado';
+            $this->redirect('/admin/usuarios');
+        }
+        
+        // Prevent admin from deleting themselves
+        if ($user['id'] == $_SESSION['user_id']) {
+            $_SESSION['error'] = 'No puedes eliminar tu propia cuenta';
+            $this->redirect('/admin/usuarios');
+        }
+        
+        if ($this->userModel->delete($id)) {
+            $this->auditLog->log('user_deleted', 'Usuario eliminado: ' . $id);
+            $_SESSION['success'] = 'Usuario eliminado correctamente';
+        } else {
+            $_SESSION['error'] = 'Error al eliminar usuario';
+        }
+        
+        $this->redirect('/admin/usuarios');
     }
 }
