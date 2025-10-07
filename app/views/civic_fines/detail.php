@@ -25,12 +25,12 @@
                     </tr>
                     <tr>
                         <th>Infractor:</th>
-                        <td><?php echo htmlspecialchars($fine['infractor_name']); ?></td>
+                        <td><?php echo htmlspecialchars($fine['citizen_name']); ?></td>
                     </tr>
-                    <?php if (!empty($fine['curp'])): ?>
+                    <?php if (!empty($fine['citizen_id'])): ?>
                     <tr>
                         <th>CURP:</th>
-                        <td><?php echo htmlspecialchars($fine['curp']); ?></td>
+                        <td><?php echo htmlspecialchars($fine['citizen_id']); ?></td>
                     </tr>
                     <?php endif; ?>
                     <tr>
