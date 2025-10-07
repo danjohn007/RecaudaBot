@@ -109,4 +109,17 @@
             </div>
         </div>
     </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-palette fs-1 text-primary"></i>
+                <h5 class="card-title mt-3">Tema y Colores</h5>
+                <p class="card-text">Personaliza los colores del sistema y chatbot.</p>
+                <a href="<?php echo BASE_URL; ?>/admin/configuraciones/tema" class="btn btn-primary">
+                    <i class="bi bi-gear"></i> Configurar
+                </a>
+            </div>
+        </div>
+    </div>
 </div>

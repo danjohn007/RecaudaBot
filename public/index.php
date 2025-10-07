@@ -144,6 +144,7 @@ $router->get('/admin/configuraciones/terminos', [new ConfigurationController(), 
 $router->get('/admin/configuraciones/whatsapp', [new ConfigurationController(), 'whatsapp']);
 $router->get('/admin/configuraciones/cuentas-bancarias', [new ConfigurationController(), 'banking']);
 $router->get('/admin/configuraciones/contacto', [new ConfigurationController(), 'contact']);
+$router->get('/admin/configuraciones/tema', [new ConfigurationController(), 'theme']);
 $router->post('/admin/configuraciones/actualizar', [new ConfigurationController(), 'update']);
 
 // Import routes
