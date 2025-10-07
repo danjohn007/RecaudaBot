@@ -6,10 +6,20 @@
 class AuditLog extends Model {
     protected $table = 'audit_log';
     
-    public function log($userId, $action, $entityType = null, $entityId = null, $oldValues = null, $newValues = null) {
+    public function log($action, $description = null, $entityType = null, $entityId = null, $oldValues = null, $newValues = null) {
+        // Support both old calling style (action, description) and new style (action, description, entityType, entityId, ...)
+        // Description is included in action field when provided
+        $userId = $_SESSION['user_id'] ?? null;
+        
+        // If description is provided, combine it with action
+        $actionText = $action;
+        if ($description !== null) {
+            $actionText = $action . ': ' . $description;
+        }
+        
         $data = [
             'user_id' => $userId,
-            'action' => $action,
+            'action' => $actionText,
             'entity_type' => $entityType,
             'entity_id' => $entityId,
             'old_values' => $oldValues ? json_encode($oldValues) : null,

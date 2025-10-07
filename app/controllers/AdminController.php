@@ -68,6 +68,29 @@ class AdminController extends Controller {
             $monthlyTrend[] = $this->paymentModel->getTotalRevenue($monthStart, $monthEnd);
         }
         
+        // Get pending payment amounts by type
+        $db = Database::getInstance()->getConnection();
+        
+        // Pending property taxes amount
+        $stmt = $db->prepare("SELECT COALESCE(SUM(total_amount), 0) as total FROM property_taxes WHERE status IN ('pending', 'overdue')");
+        $stmt->execute();
+        $pendingTaxesAmount = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+        
+        // Pending traffic fines amount
+        $stmt = $db->prepare("SELECT COALESCE(SUM(total_amount), 0) as total FROM traffic_fines WHERE status = 'pending'");
+        $stmt->execute();
+        $pendingTrafficFinesAmount = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+        
+        // Pending civic fines amount
+        $stmt = $db->prepare("SELECT COALESCE(SUM(total_amount), 0) as total FROM civic_fines WHERE status = 'pending'");
+        $stmt->execute();
+        $pendingCivicFinesAmount = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+        
+        // Pending business licenses amount
+        $stmt = $db->prepare("SELECT COALESCE(SUM(annual_fee), 0) as total FROM business_licenses WHERE status = 'pending'");
+        $stmt->execute();
+        $pendingLicensesAmount = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+        
         return [
             'total_revenue' => $totalRevenue,
             'month_revenue' => $monthRevenue,
@@ -79,7 +102,11 @@ class AdminController extends Controller {
             'pending_traffic_fines' => $pendingTrafficFines,
             'pending_civic_fines' => $pendingCivicFines,
             'pending_licenses' => $pendingLicenses,
-            'monthly_trend' => $monthlyTrend
+            'monthly_trend' => $monthlyTrend,
+            'pending_taxes_amount' => $pendingTaxesAmount,
+            'pending_traffic_fines_amount' => $pendingTrafficFinesAmount,
+            'pending_civic_fines_amount' => $pendingCivicFinesAmount,
+            'pending_licenses_amount' => $pendingLicensesAmount
         ];
     }
     

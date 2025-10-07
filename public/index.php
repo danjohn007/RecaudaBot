@@ -166,6 +166,8 @@ $router->get('/admin/reportes/predios', [new ReportController(), 'properties']);
 $router->get('/admin/reportes/licencias', [new ReportController(), 'licenses']);
 $router->get('/admin/reportes/multas', [new ReportController(), 'fines']);
 $router->get('/admin/reportes/exportar', [new ReportController(), 'export']);
+$router->get('/admin/reportes/predios/exportar', [new ReportController(), 'exportProperties']);
+$router->get('/admin/reportes/multas/exportar', [new ReportController(), 'exportFines']);
 
 // API routes
 $router->get('/api/dashboard/stats', [new AdminController(), 'getStats']);
