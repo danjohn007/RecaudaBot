@@ -40,14 +40,5 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <!-- Custom JS -->
     <script src="<?php echo PUBLIC_URL; ?>/js/main.js"></script>
-    <script>
-        // Sidebar toggle function
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
-        }
-    </script>
 </body>
 </html>

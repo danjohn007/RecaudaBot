@@ -13,44 +13,10 @@
     <link rel="stylesheet" href="<?php echo PUBLIC_URL; ?>/css/style.css">
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <h3><i class="bi bi-building"></i> RecaudaBot</h3>
-            <button class="sidebar-close" onclick="toggleSidebar()">
-                <i class="bi bi-x"></i>
-            </button>
-        </div>
-        <ul class="sidebar-menu">
-            <li><a href="<?php echo BASE_URL; ?>"><i class="bi bi-house-door"></i> Inicio</a></li>
-            <li><a href="<?php echo BASE_URL; ?>/impuesto-predial"><i class="bi bi-house"></i> Impuesto Predial</a></li>
-            <li><a href="<?php echo BASE_URL; ?>/licencias"><i class="bi bi-briefcase"></i> Licencias</a></li>
-            <li><a href="<?php echo BASE_URL; ?>/multas-transito"><i class="bi bi-car-front"></i> Multas Tránsito</a></li>
-            <li><a href="<?php echo BASE_URL; ?>/multas-civicas"><i class="bi bi-exclamation-triangle"></i> Multas Cívicas</a></li>
-            <li><a href="<?php echo BASE_URL; ?>/orientacion"><i class="bi bi-question-circle"></i> Orientación</a></li>
-            <?php if (isset($_SESSION['user_id'])): ?>
-                <?php if (isset($_SESSION['user_role']) && ($_SESSION['user_role'] === 'admin' || $_SESSION['user_role'] === 'municipal_area')): ?>
-                <li><a href="<?php echo BASE_URL; ?>/admin"><i class="bi bi-speedometer2"></i> Admin</a></li>
-                <?php endif; ?>
-                <li><a href="<?php echo BASE_URL; ?>/comprobantes"><i class="bi bi-receipt"></i> Comprobantes</a></li>
-                <li><a href="<?php echo BASE_URL; ?>/citas"><i class="bi bi-calendar"></i> Citas</a></li>
-                <li><a href="<?php echo BASE_URL; ?>/perfil"><i class="bi bi-person"></i> Mi Perfil</a></li>
-                <li><a href="<?php echo BASE_URL; ?>/logout"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</a></li>
-            <?php else: ?>
-                <li><a href="<?php echo BASE_URL; ?>/login"><i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión</a></li>
-                <li><a href="<?php echo BASE_URL; ?>/register"><i class="bi bi-person-plus"></i> Registrarse</a></li>
-            <?php endif; ?>
-        </ul>
-    </div>
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
-
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
-            <button class="menu-toggle" onclick="toggleSidebar()">
-                <i class="bi bi-list"></i>
-            </button>
-            <a class="navbar-brand ms-2" href="<?php echo BASE_URL; ?>">
+            <a class="navbar-brand" href="<?php echo BASE_URL; ?>">
                 <i class="bi bi-building"></i> RecaudaBot
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">

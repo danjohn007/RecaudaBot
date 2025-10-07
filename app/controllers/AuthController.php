@@ -80,7 +80,15 @@ class AuthController extends Controller {
         ];
         
         // Generate username from email
-        $data['username'] = explode('@', $data['email'])[0];
+        $baseUsername = explode('@', $data['email'])[0];
+        $data['username'] = $baseUsername;
+        
+        // Check for duplicate username and append number if needed
+        $counter = 1;
+        while ($this->userModel->existsByUsername($data['username'])) {
+            $data['username'] = $baseUsername . $counter;
+            $counter++;
+        }
         
         $errors = $this->validate($data, [
             'email' => 'required|email',

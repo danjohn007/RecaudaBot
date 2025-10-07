@@ -37,7 +37,7 @@
                                 <?php foreach ($fines as $fine): ?>
                                 <tr>
                                     <td><strong><?php echo htmlspecialchars($fine['folio']); ?></strong></td>
-                                    <td><?php echo htmlspecialchars($fine['infractor_name']); ?></td>
+                                    <td><?php echo htmlspecialchars($fine['citizen_name']); ?></td>
                                     <td><?php echo htmlspecialchars($fine['infraction_type']); ?></td>
                                     <td><?php echo date('d/m/Y', strtotime($fine['infraction_date'])); ?></td>
                                     <td class="fw-bold">$<?php echo number_format($fine['total_amount'], 2); ?></td>
