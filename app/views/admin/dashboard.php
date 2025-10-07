@@ -111,6 +111,9 @@
                     <a href="<?php echo BASE_URL; ?>/admin/usuarios" class="list-group-item list-group-item-action">
                         <i class="bi bi-people"></i> Gestionar Usuarios
                     </a>
+                    <a href="<?php echo BASE_URL; ?>/admin/importaciones" class="list-group-item list-group-item-action">
+                        <i class="bi bi-upload"></i> Importaciones Masivas
+                    </a>
                     <a href="<?php echo BASE_URL; ?>/admin/reportes" class="list-group-item list-group-item-action">
                         <i class="bi bi-file-earmark-bar-graph"></i> Ver Reportes
                     </a>
