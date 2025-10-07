@@ -5,7 +5,7 @@
  */
 
 class ConfigurationController extends Controller {
-    private $db;
+    protected $db;
     
     public function __construct() {
         parent::__construct();
