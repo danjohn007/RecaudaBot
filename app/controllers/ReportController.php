@@ -377,4 +377,259 @@ class ReportController extends Controller {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
+    public function properties() {
+        $this->requireRole('admin');
+        
+        // Get filters
+        $filters = [
+            'cadastral_key' => $_GET['cadastral_key'] ?? '',
+            'owner_name' => $_GET['owner_name'] ?? '',
+            'property_type' => $_GET['property_type'] ?? '',
+            'min_value' => $_GET['min_value'] ?? ''
+        ];
+        
+        // Build query
+        $sql = "SELECT * FROM properties WHERE 1=1";
+        $params = [];
+        
+        if (!empty($filters['cadastral_key'])) {
+            $sql .= " AND cadastral_key LIKE ?";
+            $params[] = '%' . $filters['cadastral_key'] . '%';
+        }
+        
+        if (!empty($filters['owner_name'])) {
+            $sql .= " AND owner_name LIKE ?";
+            $params[] = '%' . $filters['owner_name'] . '%';
+        }
+        
+        if (!empty($filters['property_type'])) {
+            $sql .= " AND property_type = ?";
+            $params[] = $filters['property_type'];
+        }
+        
+        if (!empty($filters['min_value'])) {
+            $sql .= " AND assessed_value >= ?";
+            $params[] = $filters['min_value'];
+        }
+        
+        $sql .= " ORDER BY cadastral_key";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        $properties = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Calculate statistics
+        $stats = [
+            'total_properties' => count($properties),
+            'total_assessed_value' => array_sum(array_column($properties, 'assessed_value')),
+            'avg_land_area' => count($properties) > 0 ? array_sum(array_column($properties, 'land_area')) / count($properties) : 0,
+            'avg_construction_area' => count($properties) > 0 ? array_sum(array_column($properties, 'construction_area')) / count($properties) : 0
+        ];
+        
+        $data = [
+            'title' => 'Reporte de Predios - ' . APP_NAME,
+            'properties' => $properties,
+            'stats' => $stats,
+            'filters' => $filters
+        ];
+        
+        $this->view('layout/header', $data);
+        $this->view('admin/reports/properties', $data);
+        $this->view('layout/footer');
+    }
+    
+    public function licenses() {
+        $this->requireRole('admin');
+        
+        // Get filters
+        $filters = [
+            'business_name' => $_GET['business_name'] ?? '',
+            'owner_name' => $_GET['owner_name'] ?? '',
+            'status' => $_GET['status'] ?? '',
+            'year' => $_GET['year'] ?? ''
+        ];
+        
+        // Build query
+        $sql = "SELECT * FROM business_licenses WHERE 1=1";
+        $params = [];
+        
+        if (!empty($filters['business_name'])) {
+            $sql .= " AND business_name LIKE ?";
+            $params[] = '%' . $filters['business_name'] . '%';
+        }
+        
+        if (!empty($filters['owner_name'])) {
+            $sql .= " AND owner_name LIKE ?";
+            $params[] = '%' . $filters['owner_name'] . '%';
+        }
+        
+        if (!empty($filters['status'])) {
+            $sql .= " AND status = ?";
+            $params[] = $filters['status'];
+        }
+        
+        if (!empty($filters['year'])) {
+            $sql .= " AND YEAR(application_date) = ?";
+            $params[] = $filters['year'];
+        }
+        
+        $sql .= " ORDER BY application_date DESC";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        $licenses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Calculate statistics
+        $stats = [
+            'total_licenses' => count($licenses),
+            'approved_licenses' => count(array_filter($licenses, fn($l) => $l['status'] === 'approved')),
+            'pending_licenses' => count(array_filter($licenses, fn($l) => $l['status'] === 'pending')),
+            'expired_licenses' => count(array_filter($licenses, fn($l) => $l['status'] === 'expired'))
+        ];
+        
+        $data = [
+            'title' => 'Reporte de Licencias de Funcionamiento - ' . APP_NAME,
+            'licenses' => $licenses,
+            'stats' => $stats,
+            'filters' => $filters
+        ];
+        
+        $this->view('layout/header', $data);
+        $this->view('admin/reports/licenses', $data);
+        $this->view('layout/footer');
+    }
+    
+    public function fines() {
+        $this->requireRole('admin');
+        
+        // Get filters
+        $filters = [
+            'folio' => $_GET['folio'] ?? '',
+            'fine_type' => $_GET['fine_type'] ?? '',
+            'status' => $_GET['status'] ?? '',
+            'date_from' => $_GET['date_from'] ?? '',
+            'date_to' => $_GET['date_to'] ?? '',
+            'infraction_type' => $_GET['infraction_type'] ?? '',
+            'min_amount' => $_GET['min_amount'] ?? '',
+            'max_amount' => $_GET['max_amount'] ?? ''
+        ];
+        
+        $fines = [];
+        
+        // Get traffic fines
+        if (empty($filters['fine_type']) || $filters['fine_type'] === 'traffic') {
+            $sql = "SELECT 'traffic' as fine_type, id, folio, infraction_date, infraction_type, 
+                    driver_name as infractor_name, base_amount, total_amount, status 
+                    FROM traffic_fines WHERE 1=1";
+            $params = [];
+            
+            if (!empty($filters['folio'])) {
+                $sql .= " AND folio LIKE ?";
+                $params[] = '%' . $filters['folio'] . '%';
+            }
+            
+            if (!empty($filters['status'])) {
+                $sql .= " AND status = ?";
+                $params[] = $filters['status'];
+            }
+            
+            if (!empty($filters['date_from'])) {
+                $sql .= " AND infraction_date >= ?";
+                $params[] = $filters['date_from'];
+            }
+            
+            if (!empty($filters['date_to'])) {
+                $sql .= " AND infraction_date <= ?";
+                $params[] = $filters['date_to'] . ' 23:59:59';
+            }
+            
+            if (!empty($filters['infraction_type'])) {
+                $sql .= " AND infraction_type LIKE ?";
+                $params[] = '%' . $filters['infraction_type'] . '%';
+            }
+            
+            if (!empty($filters['min_amount'])) {
+                $sql .= " AND total_amount >= ?";
+                $params[] = $filters['min_amount'];
+            }
+            
+            if (!empty($filters['max_amount'])) {
+                $sql .= " AND total_amount <= ?";
+                $params[] = $filters['max_amount'];
+            }
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($params);
+            $fines = array_merge($fines, $stmt->fetchAll(PDO::FETCH_ASSOC));
+        }
+        
+        // Get civic fines
+        if (empty($filters['fine_type']) || $filters['fine_type'] === 'civic') {
+            $sql = "SELECT 'civic' as fine_type, id, folio, infraction_date, infraction_type, 
+                    citizen_name as infractor_name, base_amount, total_amount, status 
+                    FROM civic_fines WHERE 1=1";
+            $params = [];
+            
+            if (!empty($filters['folio'])) {
+                $sql .= " AND folio LIKE ?";
+                $params[] = '%' . $filters['folio'] . '%';
+            }
+            
+            if (!empty($filters['status'])) {
+                $sql .= " AND status = ?";
+                $params[] = $filters['status'];
+            }
+            
+            if (!empty($filters['date_from'])) {
+                $sql .= " AND infraction_date >= ?";
+                $params[] = $filters['date_from'];
+            }
+            
+            if (!empty($filters['date_to'])) {
+                $sql .= " AND infraction_date <= ?";
+                $params[] = $filters['date_to'] . ' 23:59:59';
+            }
+            
+            if (!empty($filters['infraction_type'])) {
+                $sql .= " AND infraction_type LIKE ?";
+                $params[] = '%' . $filters['infraction_type'] . '%';
+            }
+            
+            if (!empty($filters['min_amount'])) {
+                $sql .= " AND total_amount >= ?";
+                $params[] = $filters['min_amount'];
+            }
+            
+            if (!empty($filters['max_amount'])) {
+                $sql .= " AND total_amount <= ?";
+                $params[] = $filters['max_amount'];
+            }
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($params);
+            $fines = array_merge($fines, $stmt->fetchAll(PDO::FETCH_ASSOC));
+        }
+        
+        // Calculate statistics
+        $stats = [
+            'total_fines' => count($fines),
+            'pending_fines' => count(array_filter($fines, fn($f) => $f['status'] === 'pending')),
+            'paid_fines' => count(array_filter($fines, fn($f) => $f['status'] === 'paid')),
+            'total_amount' => array_sum(array_column($fines, 'total_amount')),
+            'traffic_fines' => count(array_filter($fines, fn($f) => $f['fine_type'] === 'traffic')),
+            'civic_fines' => count(array_filter($fines, fn($f) => $f['fine_type'] === 'civic'))
+        ];
+        
+        $data = [
+            'title' => 'Reporte de Multas y Sanciones - ' . APP_NAME,
+            'fines' => $fines,
+            'stats' => $stats,
+            'filters' => $filters
+        ];
+        
+        $this->view('layout/header', $data);
+        $this->view('admin/reports/fines', $data);
+        $this->view('layout/footer');
+    }
 }

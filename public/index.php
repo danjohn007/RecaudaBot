@@ -123,6 +123,12 @@ $router->post('/perfil/cambiar-password', [new ProfileController(), 'updatePassw
 // Admin routes
 $router->get('/admin', [new AdminController(), 'dashboard']);
 $router->get('/admin/usuarios', [new AdminController(), 'users']);
+$router->get('/admin/usuarios/ver/{id}', [new AdminController(), 'viewUser']);
+$router->get('/admin/usuarios/editar/{id}', [new AdminController(), 'editUser']);
+$router->post('/admin/usuarios/editar/{id}', [new AdminController(), 'updateUser']);
+$router->get('/admin/usuarios/activar/{id}', [new AdminController(), 'activateUser']);
+$router->get('/admin/usuarios/desactivar/{id}', [new AdminController(), 'deactivateUser']);
+$router->get('/admin/usuarios/eliminar/{id}', [new AdminController(), 'deleteUser']);
 $router->get('/admin/reportes', [new AdminController(), 'reports']);
 $router->get('/admin/estadisticas', [new AdminController(), 'statistics']);
 $router->get('/admin/configuracion', [new AdminController(), 'settings']);
@@ -138,6 +144,7 @@ $router->get('/admin/configuraciones/terminos', [new ConfigurationController(), 
 $router->get('/admin/configuraciones/whatsapp', [new ConfigurationController(), 'whatsapp']);
 $router->get('/admin/configuraciones/cuentas-bancarias', [new ConfigurationController(), 'banking']);
 $router->get('/admin/configuraciones/contacto', [new ConfigurationController(), 'contact']);
+$router->get('/admin/configuraciones/tema', [new ConfigurationController(), 'theme']);
 $router->post('/admin/configuraciones/actualizar', [new ConfigurationController(), 'update']);
 
 // Import routes
@@ -155,6 +162,9 @@ $router->get('/admin/reportes', [new ReportController(), 'index']);
 $router->get('/admin/reportes/ciudadanos', [new ReportController(), 'citizens']);
 $router->get('/admin/reportes/obligaciones', [new ReportController(), 'obligations']);
 $router->get('/admin/reportes/pagos', [new ReportController(), 'payments']);
+$router->get('/admin/reportes/predios', [new ReportController(), 'properties']);
+$router->get('/admin/reportes/licencias', [new ReportController(), 'licenses']);
+$router->get('/admin/reportes/multas', [new ReportController(), 'fines']);
 $router->get('/admin/reportes/exportar', [new ReportController(), 'export']);
 
 // API routes

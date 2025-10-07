@@ -188,6 +188,119 @@
 </div>
 
 <script>
-// Placeholder for chart initialization
-// These would be populated with real data from the stats array
+// Monthly Revenue Chart
+const monthlyRevenueCtx = document.getElementById('monthlyRevenueChart');
+new Chart(monthlyRevenueCtx, {
+    type: 'line',
+    data: {
+        labels: ['Mes -5', 'Mes -4', 'Mes -3', 'Mes -2', 'Mes -1', 'Mes Actual'],
+        datasets: [{
+            label: 'Recaudación ($)',
+            data: <?php echo isset($stats['monthly_trend']) ? json_encode($stats['monthly_trend']) : '[0, 0, 0, 0, 0, 0]'; ?>,
+            borderColor: 'rgba(13, 110, 253, 1)',
+            backgroundColor: 'rgba(13, 110, 253, 0.1)',
+            fill: true,
+            tension: 0.4
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                display: true,
+                position: 'top'
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    callback: function(value) {
+                        return '$' + value.toLocaleString();
+                    }
+                }
+            }
+        }
+    }
+});
+
+// Revenue by Type Chart
+const revenueByTypeCtx = document.getElementById('revenueByTypeChart');
+<?php if (!empty($stats['revenue_by_type'])): ?>
+const revenueData = <?php echo json_encode($stats['revenue_by_type']); ?>;
+const typeLabels = revenueData.map(item => {
+    const types = {
+        'property_tax': 'Impuesto Predial',
+        'business_license': 'Licencias',
+        'traffic_fine': 'Multas Tránsito',
+        'civic_fine': 'Multas Cívicas'
+    };
+    return types[item.payment_type] || item.payment_type;
+});
+const typeAmounts = revenueData.map(item => parseFloat(item.total));
+<?php else: ?>
+const typeLabels = ['Impuesto Predial', 'Licencias', 'Multas Tránsito', 'Multas Cívicas'];
+const typeAmounts = [0, 0, 0, 0];
+<?php endif; ?>
+
+new Chart(revenueByTypeCtx, {
+    type: 'doughnut',
+    data: {
+        labels: typeLabels,
+        datasets: [{
+            data: typeAmounts,
+            backgroundColor: [
+                'rgba(13, 110, 253, 0.7)',
+                'rgba(25, 135, 84, 0.7)',
+                'rgba(255, 193, 7, 0.7)',
+                'rgba(220, 53, 69, 0.7)'
+            ],
+            borderColor: [
+                'rgba(13, 110, 253, 1)',
+                'rgba(25, 135, 84, 1)',
+                'rgba(255, 193, 7, 1)',
+                'rgba(220, 53, 69, 1)'
+            ],
+            borderWidth: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+// User Registration Chart
+const userRegistrationCtx = document.getElementById('userRegistrationChart');
+new Chart(userRegistrationCtx, {
+    type: 'bar',
+    data: {
+        labels: ['Mes -5', 'Mes -4', 'Mes -3', 'Mes -2', 'Mes -1', 'Mes Actual'],
+        datasets: [{
+            label: 'Nuevos Usuarios',
+            data: [12, 19, 15, 22, 18, 25],
+            backgroundColor: 'rgba(13, 202, 240, 0.5)',
+            borderColor: 'rgba(13, 202, 240, 1)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    stepSize: 5
+                }
+            }
+        }
+    }
+});
 </script>

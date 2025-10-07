@@ -150,6 +150,44 @@ class ConfigurationController extends Controller {
         $this->view('layout/footer');
     }
     
+    public function theme() {
+        $this->requireRole('admin');
+        
+        $settings = $this->getSettingsByPrefix('theme_');
+        
+        // Default theme colors if not set
+        $defaults = [
+            'theme_primary_color' => '#0d6efd',
+            'theme_secondary_color' => '#6c757d',
+            'theme_success_color' => '#198754',
+            'theme_danger_color' => '#dc3545',
+            'theme_warning_color' => '#ffc107',
+            'theme_info_color' => '#0dcaf0',
+            'theme_light_color' => '#f8f9fa',
+            'theme_dark_color' => '#212529',
+            'theme_chatbot_bg_color' => '#0d6efd',
+            'theme_chatbot_text_color' => '#ffffff',
+            'theme_chatbot_user_bg_color' => '#e9ecef',
+            'theme_chatbot_user_text_color' => '#212529'
+        ];
+        
+        // Merge with existing settings
+        foreach ($defaults as $key => $defaultValue) {
+            if (!isset($settings[$key])) {
+                $settings[$key] = $defaultValue;
+            }
+        }
+        
+        $data = [
+            'title' => 'Configuración de Tema y Colores - ' . APP_NAME,
+            'settings' => $settings
+        ];
+        
+        $this->view('layout/header', $data);
+        $this->view('admin/configuration/theme', $data);
+        $this->view('layout/footer');
+    }
+    
     public function update() {
         $this->requireRole('admin');
         
