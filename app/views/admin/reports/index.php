@@ -47,6 +47,47 @@
 </div>
 
 <div class="row mt-4">
+    <div class="col-md-4 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-building fs-1 text-info"></i>
+                <h5 class="card-title mt-3">Reporte de Predios</h5>
+                <p class="card-text">Información catastral y propietarios de predios</p>
+                <a href="<?php echo BASE_URL; ?>/admin/reportes/obligaciones?type=property_tax" class="btn btn-info">
+                    <i class="bi bi-file-text"></i> Ver Reporte
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-shop fs-1 text-primary"></i>
+                <h5 class="card-title mt-3">Licencias de Funcionamiento</h5>
+                <p class="card-text">Reporte de licencias comerciales emitidas</p>
+                <a href="<?php echo BASE_URL; ?>/admin/reportes/pagos?type=business_license" class="btn btn-primary">
+                    <i class="bi bi-file-text"></i> Ver Reporte
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-exclamation-triangle fs-1 text-danger"></i>
+                <h5 class="card-title mt-3">Multas y Sanciones</h5>
+                <p class="card-text">Reporte de multas de tránsito y cívicas</p>
+                <a href="<?php echo BASE_URL; ?>/admin/reportes/obligaciones?type=traffic_fine" class="btn btn-danger">
+                    <i class="bi bi-file-text"></i> Ver Reporte
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
     <div class="col-12">
         <div class="card shadow">
             <div class="card-header bg-info text-white">

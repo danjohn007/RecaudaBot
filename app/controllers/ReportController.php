@@ -162,7 +162,7 @@ class ReportController extends Controller {
         // Get civic fines
         if (empty($filters['type']) || $filters['type'] === 'civic_fine') {
             $sql = "SELECT 'civic_fine' as type, id, folio as reference, 
-                    infractor_name as citizen, total_amount, status, 
+                    citizen_name as citizen, total_amount, status, 
                     infraction_date as due_date, paid_date
                     FROM civic_fines";
             
