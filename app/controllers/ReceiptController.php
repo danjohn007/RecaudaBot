@@ -47,12 +47,11 @@ class ReceiptController extends Controller {
             $this->redirect('/comprobantes');
         }
         
-        // Generate PDF here (simplified version)
-        header('Content-Type: application/pdf');
-        header('Content-Disposition: attachment; filename="comprobante-' . $receipt['receipt_number'] . '.pdf"');
+        // Generate PDF using SimplePDF
+        require_once __DIR__ . '/../lib/SimplePDF.php';
         
-        // In a real implementation, you would use a PDF library like TCPDF or mPDF
-        echo "PDF content would be generated here";
+        $pdf = new SimplePDF('Comprobante de Pago - ' . $receipt['receipt_number']);
+        $pdf->output('comprobante-' . $receipt['receipt_number'], $receipt);
         exit;
     }
     

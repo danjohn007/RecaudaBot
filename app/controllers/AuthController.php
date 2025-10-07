@@ -71,7 +71,6 @@ class AuthController extends Controller {
         }
         
         $data = [
-            'username' => $_POST['username'] ?? '',
             'email' => $_POST['email'] ?? '',
             'password' => $_POST['password'] ?? '',
             'full_name' => $_POST['full_name'] ?? '',
@@ -80,11 +79,14 @@ class AuthController extends Controller {
             'address' => $_POST['address'] ?? ''
         ];
         
+        // Generate username from email
+        $data['username'] = explode('@', $data['email'])[0];
+        
         $errors = $this->validate($data, [
-            'username' => 'required|min:4|max:50',
             'email' => 'required|email',
             'password' => 'required|min:8',
             'full_name' => 'required|min:3',
+            'phone' => 'required',
             'curp' => 'required'
         ]);
         
@@ -94,14 +96,15 @@ class AuthController extends Controller {
             $this->redirect('/register');
         }
         
-        if ($this->userModel->existsByEmail($data['email'])) {
-            $_SESSION['error'] = 'El correo electrónico ya está registrado';
+        // Validate phone is 10 digits
+        if (!preg_match('/^\d{10}$/', $data['phone'])) {
+            $_SESSION['error'] = 'El teléfono debe tener exactamente 10 dígitos';
             $_SESSION['old'] = $data;
             $this->redirect('/register');
         }
         
-        if ($this->userModel->existsByUsername($data['username'])) {
-            $_SESSION['error'] = 'El nombre de usuario ya está registrado';
+        if ($this->userModel->existsByEmail($data['email'])) {
+            $_SESSION['error'] = 'El correo electrónico ya está registrado';
             $_SESSION['old'] = $data;
             $this->redirect('/register');
         }
