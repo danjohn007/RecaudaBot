@@ -101,7 +101,31 @@
 </div>
 
 <div class="row">
-    <div class="col-12">
+    <div class="col-md-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-link-45deg"></i> Enlaces Rápidos</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <a href="<?php echo BASE_URL; ?>/admin/usuarios" class="list-group-item list-group-item-action">
+                        <i class="bi bi-people"></i> Gestionar Usuarios
+                    </a>
+                    <a href="<?php echo BASE_URL; ?>/admin/reportes" class="list-group-item list-group-item-action">
+                        <i class="bi bi-file-earmark-bar-graph"></i> Ver Reportes
+                    </a>
+                    <a href="<?php echo BASE_URL; ?>/admin/estadisticas" class="list-group-item list-group-item-action">
+                        <i class="bi bi-graph-up"></i> Estadísticas Detalladas
+                    </a>
+                    <a href="<?php echo BASE_URL; ?>/admin/configuraciones" class="list-group-item list-group-item-action">
+                        <i class="bi bi-gear"></i> Configuraciones del Sistema
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
         <div class="card shadow">
             <div class="card-header">
                 <h5 class="mb-0"><i class="bi bi-clock-history"></i> Actividad Reciente</h5>

@@ -29,6 +29,7 @@ require_once __DIR__ . '/../app/controllers/PaymentController.php';
 require_once __DIR__ . '/../app/controllers/AppointmentController.php';
 require_once __DIR__ . '/../app/controllers/AdminController.php';
 require_once __DIR__ . '/../app/controllers/ProfileController.php';
+require_once __DIR__ . '/../app/controllers/ConfigurationController.php';
 
 // Load models
 require_once __DIR__ . '/../app/models/User.php';
@@ -124,6 +125,18 @@ $router->get('/admin/reportes', [new AdminController(), 'reports']);
 $router->get('/admin/estadisticas', [new AdminController(), 'statistics']);
 $router->get('/admin/configuracion', [new AdminController(), 'settings']);
 $router->post('/admin/configuracion', [new AdminController(), 'updateSettings']);
+
+// Configuration routes
+$router->get('/admin/configuraciones', [new ConfigurationController(), 'index']);
+$router->get('/admin/configuraciones/paypal', [new ConfigurationController(), 'paypal']);
+$router->get('/admin/configuraciones/correo', [new ConfigurationController(), 'email']);
+$router->get('/admin/configuraciones/moneda', [new ConfigurationController(), 'currency']);
+$router->get('/admin/configuraciones/sitio', [new ConfigurationController(), 'site']);
+$router->get('/admin/configuraciones/terminos', [new ConfigurationController(), 'terms']);
+$router->get('/admin/configuraciones/whatsapp', [new ConfigurationController(), 'whatsapp']);
+$router->get('/admin/configuraciones/cuentas-bancarias', [new ConfigurationController(), 'banking']);
+$router->get('/admin/configuraciones/contacto', [new ConfigurationController(), 'contact']);
+$router->post('/admin/configuraciones/actualizar', [new ConfigurationController(), 'update']);
 
 // API routes
 $router->get('/api/dashboard/stats', [new AdminController(), 'getStats']);
