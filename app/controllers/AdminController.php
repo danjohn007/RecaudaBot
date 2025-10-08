@@ -91,6 +91,40 @@ class AdminController extends Controller {
         $stmt->execute();
         $pendingLicensesAmount = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
         
+        // Get recent activity (last 10 activities)
+        $recentActivity = [];
+        
+        // Recent payments
+        $stmt = $db->prepare("SELECT 'payment' as type, p.amount, p.payment_type, p.paid_at as activity_date, u.full_name 
+                              FROM payments p 
+                              LEFT JOIN users u ON p.user_id = u.id 
+                              WHERE p.status = 'completed' 
+                              ORDER BY p.paid_at DESC LIMIT 5");
+        $stmt->execute();
+        $recentActivity = array_merge($recentActivity, $stmt->fetchAll(PDO::FETCH_ASSOC));
+        
+        // Recent user registrations
+        $stmt = $db->prepare("SELECT 'registration' as type, full_name, created_at as activity_date 
+                              FROM users 
+                              WHERE role = 'citizen' 
+                              ORDER BY created_at DESC LIMIT 3");
+        $stmt->execute();
+        $recentActivity = array_merge($recentActivity, $stmt->fetchAll(PDO::FETCH_ASSOC));
+        
+        // Recent license applications
+        $stmt = $db->prepare("SELECT 'license' as type, bl.business_name, bl.created_at as activity_date, u.full_name 
+                              FROM business_licenses bl 
+                              LEFT JOIN users u ON bl.user_id = u.id 
+                              ORDER BY bl.created_at DESC LIMIT 2");
+        $stmt->execute();
+        $recentActivity = array_merge($recentActivity, $stmt->fetchAll(PDO::FETCH_ASSOC));
+        
+        // Sort by date and limit to 10
+        usort($recentActivity, function($a, $b) {
+            return strtotime($b['activity_date']) - strtotime($a['activity_date']);
+        });
+        $recentActivity = array_slice($recentActivity, 0, 10);
+        
         return [
             'total_revenue' => $totalRevenue,
             'month_revenue' => $monthRevenue,
@@ -106,7 +140,8 @@ class AdminController extends Controller {
             'pending_taxes_amount' => $pendingTaxesAmount,
             'pending_traffic_fines_amount' => $pendingTrafficFinesAmount,
             'pending_civic_fines_amount' => $pendingCivicFinesAmount,
-            'pending_licenses_amount' => $pendingLicensesAmount
+            'pending_licenses_amount' => $pendingLicensesAmount,
+            'recent_activity' => $recentActivity
         ];
     }
     

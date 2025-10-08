@@ -227,9 +227,20 @@
                                                 <i class="bi bi-eye"></i>
                                             </a>
                                             <?php if ($fine['status'] === 'pending'): ?>
-                                            <a href="<?php echo BASE_URL; ?>/admin/multas/procesar/<?php echo $fine['id']; ?>" 
+                                            <a href="<?php echo BASE_URL; ?>/admin/multas/procesar/<?php echo $fine['id']; ?>?type=<?php echo $fine['fine_type']; ?>" 
                                                class="btn btn-sm btn-success" title="Procesar">
                                                 <i class="bi bi-check-circle"></i>
+                                            </a>
+                                            <?php endif; ?>
+                                            <a href="<?php echo BASE_URL; ?>/admin/multas/editar/<?php echo $fine['id']; ?>?type=<?php echo $fine['fine_type']; ?>" 
+                                               class="btn btn-sm btn-warning" title="Editar">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <?php if ($fine['status'] === 'pending'): ?>
+                                            <a href="<?php echo BASE_URL; ?>/admin/multas/suspender/<?php echo $fine['id']; ?>?type=<?php echo $fine['fine_type']; ?>" 
+                                               class="btn btn-sm btn-danger" title="Suspender"
+                                               onclick="return confirm('¿Está seguro de suspender esta multa?');">
+                                                <i class="bi bi-x-circle"></i>
                                             </a>
                                             <?php endif; ?>
                                         </td>

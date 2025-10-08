@@ -158,7 +158,43 @@
                 <h5 class="mb-0"><i class="bi bi-clock-history"></i> Actividad Reciente</h5>
             </div>
             <div class="card-body">
-                <p class="text-muted">Últimos movimientos del sistema...</p>
+                <?php if (!empty($stats['recent_activity'])): ?>
+                    <div class="list-group list-group-flush">
+                        <?php foreach ($stats['recent_activity'] as $activity): ?>
+                            <div class="list-group-item">
+                                <?php if ($activity['type'] === 'payment'): ?>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <i class="bi bi-cash text-success"></i>
+                                            <strong><?php echo htmlspecialchars($activity['full_name'] ?? 'Usuario'); ?></strong>
+                                            realizó un pago de <strong>$<?php echo number_format($activity['amount'], 2); ?></strong>
+                                        </div>
+                                        <small class="text-muted"><?php echo date('d/m/Y H:i', strtotime($activity['activity_date'])); ?></small>
+                                    </div>
+                                <?php elseif ($activity['type'] === 'registration'): ?>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <i class="bi bi-person-plus text-info"></i>
+                                            Nuevo usuario: <strong><?php echo htmlspecialchars($activity['full_name']); ?></strong>
+                                        </div>
+                                        <small class="text-muted"><?php echo date('d/m/Y H:i', strtotime($activity['activity_date'])); ?></small>
+                                    </div>
+                                <?php elseif ($activity['type'] === 'license'): ?>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <i class="bi bi-file-earmark-text text-warning"></i>
+                                            <strong><?php echo htmlspecialchars($activity['full_name'] ?? 'Usuario'); ?></strong>
+                                            solicitó licencia para <strong><?php echo htmlspecialchars($activity['business_name']); ?></strong>
+                                        </div>
+                                        <small class="text-muted"><?php echo date('d/m/Y H:i', strtotime($activity['activity_date'])); ?></small>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else: ?>
+                    <p class="text-muted text-center">No hay actividad reciente</p>
+                <?php endif; ?>
             </div>
         </div>
     </div>

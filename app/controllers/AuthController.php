@@ -117,6 +117,13 @@ class AuthController extends Controller {
             $this->redirect('/register');
         }
         
+        // Check for duplicate CURP
+        if ($this->userModel->existsByCurp($data['curp'])) {
+            $_SESSION['error'] = 'El CURP ya está registrado en el sistema';
+            $_SESSION['old'] = $data;
+            $this->redirect('/register');
+        }
+        
         $userId = $this->userModel->createUser($data);
         
         if ($userId) {
@@ -124,7 +131,8 @@ class AuthController extends Controller {
             $_SESSION['success'] = 'Registro exitoso. Por favor, inicie sesión.';
             $this->redirect('/login');
         } else {
-            $_SESSION['error'] = 'Error al registrar usuario';
+            $_SESSION['error'] = 'Error al registrar usuario. Por favor, intente nuevamente.';
+            $_SESSION['old'] = $data;
             $this->redirect('/register');
         }
     }
