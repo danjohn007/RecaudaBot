@@ -1,36 +1,49 @@
 -- ============================================================================
--- COMPREHENSIVE SAMPLE DATA FOR RECAUDABOT
--- ============================================================================
--- This script generates extensive sample data to populate all graphs in the
--- Dashboard Administrativo and Estadísticas del Sistema
--- 
--- IMPORTANT: Run this AFTER the schema.sql has been executed
--- Password for all users: password123
+-- SCRIPT DE LIMPIEZA DE DATOS PARA RECAUDABOT (compatible con claves foráneas)
 -- ============================================================================
 
-USE recaudabot;
+-- USE recaudabot;
 
--- Disable foreign key checks temporarily
+-- Deshabilita las comprobaciones de clave foránea temporalmente
 SET FOREIGN_KEY_CHECKS = 0;
 
--- Clear existing data (CAUTION: This will delete all data!)
-TRUNCATE TABLE receipts;
-TRUNCATE TABLE payments;
-TRUNCATE TABLE fine_appeals;
-TRUNCATE TABLE fine_evidence;
-TRUNCATE TABLE traffic_fines;
-TRUNCATE TABLE civic_fines;
-TRUNCATE TABLE license_documents;
-TRUNCATE TABLE business_licenses;
-TRUNCATE TABLE property_taxes;
-TRUNCATE TABLE properties;
-TRUNCATE TABLE appointments;
-TRUNCATE TABLE notifications;
-TRUNCATE TABLE audit_log;
-TRUNCATE TABLE users;
+-- Elimina los datos de las tablas hijas antes que las tablas padres
+DELETE FROM receipts;
+DELETE FROM payments;
+DELETE FROM fine_appeals;
+DELETE FROM fine_evidence;
+DELETE FROM traffic_fines;
+DELETE FROM civic_fines;
+DELETE FROM license_documents;
+DELETE FROM business_licenses;
+DELETE FROM property_taxes;
+DELETE FROM properties;
+DELETE FROM appointments;
+DELETE FROM notifications;
+DELETE FROM audit_log;
+DELETE FROM users;
 
--- Re-enable foreign key checks
+-- Rehabilita las comprobaciones de clave foránea
 SET FOREIGN_KEY_CHECKS = 1;
+
+-- Opcional: Reinicia los contadores AUTO_INCREMENT si tu DBMS lo requiere
+ALTER TABLE receipts AUTO_INCREMENT = 1;
+ALTER TABLE payments AUTO_INCREMENT = 1;
+ALTER TABLE fine_appeals AUTO_INCREMENT = 1;
+ALTER TABLE fine_evidence AUTO_INCREMENT = 1;
+ALTER TABLE traffic_fines AUTO_INCREMENT = 1;
+ALTER TABLE civic_fines AUTO_INCREMENT = 1;
+ALTER TABLE license_documents AUTO_INCREMENT = 1;
+ALTER TABLE business_licenses AUTO_INCREMENT = 1;
+ALTER TABLE property_taxes AUTO_INCREMENT = 1;
+ALTER TABLE properties AUTO_INCREMENT = 1;
+ALTER TABLE appointments AUTO_INCREMENT = 1;
+ALTER TABLE notifications AUTO_INCREMENT = 1;
+ALTER TABLE audit_log AUTO_INCREMENT = 1;
+ALTER TABLE users AUTO_INCREMENT = 1;
+
+-- Mensaje de éxito
+SELECT 'Datos eliminados correctamente. Listo para cargar nuevos datos.' AS Status;
 
 -- ============================================================================
 -- USERS (Admin, Municipal Area, and Citizens distributed across 6 months)
@@ -137,30 +150,34 @@ INSERT INTO property_taxes (property_id, year, period, base_amount, discount_amo
 -- ============================================================================
 -- TRAFFIC FINES (Multiple fines per month across 6 months)
 -- ============================================================================
-INSERT INTO traffic_fines (folio, license_plate, driver_license, driver_name, infraction_type, infraction_code, description, location, infraction_date, officer_name, officer_badge, base_amount, discount_amount, total_amount, status, due_date, paid_date, paid_by, payment_reference) VALUES
-('MT-2025-00001', 'PQR-901-KL', 'LIC271306', 'Jorge Rodríguez López', 'Uso de celular', 'ART-34', 'Conducía usando dispositivo móvil', 'Av. Principal km 10', '2025-05-26 13:29:59', 'Oficial Martínez', 'OF-2164', 1110.04, 0.00, 1110.04, 'paid', '2025-06-10', 2025-05-25 13:29:59, '7', 'TFINE-00001'),
+INSERT INTO traffic_fines (
+  folio, license_plate, driver_license, driver_name, infraction_type, infraction_code, description, location,
+  infraction_date, officer_name, officer_badge, base_amount, discount_amount, total_amount, status,
+  due_date, paid_date, paid_by, payment_reference
+) VALUES
+('MT-2025-00001', 'PQR-901-KL', 'LIC271306', 'Jorge Rodríguez López', 'Uso de celular', 'ART-34', 'Conducía usando dispositivo móvil', 'Av. Principal km 10', '2025-05-26 13:29:59', 'Oficial Martínez', 'OF-2164', 1110.04, 0.00, 1110.04, 'paid', '2025-06-10', '2025-05-25 13:29:59', '7', 'TFINE-00001'),
 ('MT-2025-00002', 'XYZ-456-AB', 'LIC415270', 'María López Hernández', 'Exceso de velocidad', 'ART-23', 'Circulaba a 98 km/h en zona de 51 km/h', 'Av. Principal km 4', '2025-05-15 13:29:59', 'Oficial González', 'OF-5731', 1430.16, 0.00, 1430.16, 'pending', '2025-06-10', NULL, NULL, NULL),
 ('MT-2025-00003', 'XYZ-456-AB', 'LIC754952', 'Roberto Sánchez Torres', 'Estacionamiento prohibido', 'ART-67', 'Vehículo estacionado en zona prohibida', 'Av. Principal km 4', '2025-05-23 13:29:59', 'Oficial González', 'OF-5393', 727.16, 0.00, 727.16, 'pending', '2025-06-10', NULL, NULL, NULL),
-('MT-2025-00004', 'MNO-678-IJ', 'LIC560310', 'María López Hernández', 'Estacionamiento prohibido', 'ART-67', 'Vehículo estacionado en zona prohibida', 'Av. Principal km 6', '2025-05-21 13:29:59', 'Oficial Martínez', 'OF-2120', 729.35, 0.00, 729.35, 'paid', '2025-06-10', 2025-05-20 13:29:59, '9', 'TFINE-00004'),
+('MT-2025-00004', 'MNO-678-IJ', 'LIC560310', 'María López Hernández', 'Estacionamiento prohibido', 'ART-67', 'Vehículo estacionado en zona prohibida', 'Av. Principal km 6', '2025-05-21 13:29:59', 'Oficial Martínez', 'OF-2120', 729.35, 0.00, 729.35, 'paid', '2025-06-10', '2025-05-20 13:29:59', '9', 'TFINE-00004'),
 ('MT-2025-00005', 'YZA-890-QR', 'LIC374553', 'Luis García Fernández', 'No usar cinturón', 'ART-89', 'Conducía sin cinturón de seguridad', 'Av. Principal km 9', '2025-06-11 13:29:59', 'Oficial González', 'OF-9230', 512.73, 0.00, 512.73, 'pending', '2025-07-10', NULL, NULL, NULL),
 ('MT-2025-00006', 'XYZ-456-AB', 'LIC348876', 'Patricia Hernández Ruiz', 'Uso de celular', 'ART-34', 'Conducía usando dispositivo móvil', 'Av. Principal km 2', '2025-07-06 13:29:59', 'Oficial López', 'OF-9159', 1252.19, 0.00, 1252.19, 'pending', '2025-07-10', NULL, NULL, NULL),
 ('MT-2025-00007', 'VWX-567-OP', 'LIC470092', 'Ana Martínez Cruz', 'Estacionamiento prohibido', 'ART-67', 'Vehículo estacionado en zona prohibida', 'Av. Principal km 3', '2025-06-24 13:29:59', 'Oficial González', 'OF-2983', 851.88, 0.00, 851.88, 'pending', '2025-07-10', NULL, NULL, NULL),
 ('MT-2025-00008', 'PQR-901-KL', 'LIC209433', 'Ana Martínez Cruz', 'Falta de documentos', 'ART-56', 'No portaba licencia de conducir', 'Av. Principal km 4', '2025-06-25 13:29:59', 'Oficial González', 'OF-1982', 1008.17, 0.00, 1008.17, 'pending', '2025-07-10', NULL, NULL, NULL),
-('MT-2025-00009', 'VWX-567-OP', 'LIC322205', 'Patricia Hernández Ruiz', 'Circular sin placas', 'ART-78', 'Vehículo sin placas vigentes', 'Av. Principal km 5', '2025-07-22 13:29:59', 'Oficial López', 'OF-3594', 2388.43, 0.00, 2388.43, 'paid', '2025-08-09', 2025-07-18 13:29:59, '12', 'TFINE-00009'),
-('MT-2025-00010', 'GHI-012-EF', 'LIC937540', 'Juan Pérez García', 'Estacionamiento prohibido', 'ART-67', 'Vehículo estacionado en zona prohibida', 'Av. Principal km 9', '2025-07-19 13:29:59', 'Oficial Ramírez', 'OF-9979', 625.36, 0.00, 625.36, 'paid', '2025-08-09', 2025-07-12 13:29:59, '4', 'TFINE-00010'),
-('MT-2025-00011', 'GHI-012-EF', 'LIC673947', 'Carlos González Ruiz', 'No respetar semáforo', 'ART-45', 'Cruzó semáforo en luz roja', 'Av. Principal km 6', '2025-07-14 13:29:59', 'Oficial González', 'OF-4867', 1963.89, 392.78, 1571.11, 'paid', '2025-08-09', 2025-07-24 13:29:59, '8', 'TFINE-00011'),
-('MT-2025-00012', 'GHI-012-EF', 'LIC918510', 'Patricia Hernández Ruiz', 'Estacionamiento prohibido', 'ART-67', 'Vehículo estacionado en zona prohibida', 'Av. Principal km 6', '2025-08-12 13:29:59', 'Oficial Martínez', 'OF-4188', 645.07, 0.00, 645.07, 'paid', '2025-09-08', 2025-08-13 13:29:59, '7', 'TFINE-00012'),
+('MT-2025-00009', 'VWX-567-OP', 'LIC322205', 'Patricia Hernández Ruiz', 'Circular sin placas', 'ART-78', 'Vehículo sin placas vigentes', 'Av. Principal km 5', '2025-07-22 13:29:59', 'Oficial López', 'OF-3594', 2388.43, 0.00, 2388.43, 'paid', '2025-08-09', '2025-07-18 13:29:59', '12', 'TFINE-00009'),
+('MT-2025-00010', 'GHI-012-EF', 'LIC937540', 'Juan Pérez García', 'Estacionamiento prohibido', 'ART-67', 'Vehículo estacionado en zona prohibida', 'Av. Principal km 9', '2025-07-19 13:29:59', 'Oficial Ramírez', 'OF-9979', 625.36, 0.00, 625.36, 'paid', '2025-08-09', '2025-07-12 13:29:59', '4', 'TFINE-00010'),
+('MT-2025-00011', 'GHI-012-EF', 'LIC673947', 'Carlos González Ruiz', 'No respetar semáforo', 'ART-45', 'Cruzó semáforo en luz roja', 'Av. Principal km 6', '2025-07-14 13:29:59', 'Oficial González', 'OF-4867', 1963.89, 392.78, 1571.11, 'paid', '2025-08-09', '2025-07-24 13:29:59', '8', 'TFINE-00011'),
+('MT-2025-00012', 'GHI-012-EF', 'LIC918510', 'Patricia Hernández Ruiz', 'Estacionamiento prohibido', 'ART-67', 'Vehículo estacionado en zona prohibida', 'Av. Principal km 6', '2025-08-12 13:29:59', 'Oficial Martínez', 'OF-4188', 645.07, 0.00, 645.07, 'paid', '2025-09-08', '2025-08-13 13:29:59', '7', 'TFINE-00012'),
 ('MT-2025-00013', 'DEF-789-CD', 'LIC246162', 'Fernando Díaz Sánchez', 'Exceso de velocidad', 'ART-23', 'Circulaba a 107 km/h en zona de 55 km/h', 'Av. Principal km 2', '2025-08-31 13:29:59', 'Oficial Ramírez', 'OF-4106', 1337.74, 0.00, 1337.74, 'pending', '2025-09-08', NULL, NULL, NULL),
-('MT-2025-00014', 'ABC-123-XY', 'LIC857271', 'Luis García Fernández', 'No usar cinturón', 'ART-89', 'Conducía sin cinturón de seguridad', 'Av. Principal km 3', '2025-08-20 13:29:59', 'Oficial Martínez', 'OF-9703', 724.65, 0.00, 724.65, 'paid', '2025-09-08', 2025-08-13 13:29:59, '9', 'TFINE-00014'),
-('MT-2025-00015', 'MNO-678-IJ', 'LIC110413', 'Carlos González Ruiz', 'No usar cinturón', 'ART-89', 'Conducía sin cinturón de seguridad', 'Av. Principal km 1', '2025-08-10 13:29:59', 'Oficial González', 'OF-5215', 712.36, 0.00, 712.36, 'paid', '2025-09-08', 2025-08-19 13:29:59, '11', 'TFINE-00015'),
+('MT-2025-00014', 'ABC-123-XY', 'LIC857271', 'Luis García Fernández', 'No usar cinturón', 'ART-89', 'Conducía sin cinturón de seguridad', 'Av. Principal km 3', '2025-08-20 13:29:59', 'Oficial Martínez', 'OF-9703', 724.65, 0.00, 724.65, 'paid', '2025-09-08', '2025-08-13 13:29:59', '9', 'TFINE-00014'),
+('MT-2025-00015', 'MNO-678-IJ', 'LIC110413', 'Carlos González Ruiz', 'No usar cinturón', 'ART-89', 'Conducía sin cinturón de seguridad', 'Av. Principal km 1', '2025-08-10 13:29:59', 'Oficial González', 'OF-5215', 712.36, 0.00, 712.36, 'paid', '2025-09-08', '2025-08-19 13:29:59', '11', 'TFINE-00015'),
 ('MT-2025-00016', 'DEF-789-CD', 'LIC218559', 'Carlos González Ruiz', 'No respetar semáforo', 'ART-45', 'Cruzó semáforo en luz roja', 'Av. Principal km 8', '2025-09-16 13:29:59', 'Oficial López', 'OF-6337', 2105.69, 0.00, 2105.69, 'pending', '2025-10-08', NULL, NULL, NULL),
 ('MT-2025-00017', 'ABC-123-XY', 'LIC955032', 'Fernando Díaz Sánchez', 'Exceso de velocidad', 'ART-23', 'Circulaba a 92 km/h en zona de 51 km/h', 'Av. Principal km 2', '2025-09-12 13:29:59', 'Oficial Martínez', 'OF-3433', 1442.15, 0.00, 1442.15, 'pending', '2025-10-08', NULL, NULL, NULL),
 ('MT-2025-00018', 'JKL-345-GH', 'LIC635760', 'Fernando Díaz Sánchez', 'Dar vuelta prohibida', 'ART-90', 'Realizó giro prohibido', 'Av. Principal km 3', '2025-09-21 13:29:59', 'Oficial Martínez', 'OF-7161', 597.90, 0.00, 597.90, 'pending', '2025-10-08', NULL, NULL, NULL),
-('MT-2025-00019', 'XYZ-456-AB', 'LIC202168', 'Roberto Sánchez Torres', 'Falta de documentos', 'ART-56', 'No portaba licencia de conducir', 'Av. Principal km 4', '2025-10-28 13:29:59', 'Oficial Ramírez', 'OF-6016', 1036.95, 0.00, 1036.95, 'paid', '2025-11-07', 2025-10-21 13:29:59, '8', 'TFINE-00019'),
+('MT-2025-00019', 'XYZ-456-AB', 'LIC202168', 'Roberto Sánchez Torres', 'Falta de documentos', 'ART-56', 'No portaba licencia de conducir', 'Av. Principal km 4', '2025-10-28 13:29:59', 'Oficial Ramírez', 'OF-6016', 1036.95, 0.00, 1036.95, 'paid', '2025-11-07', '2025-10-21 13:29:59', '8', 'TFINE-00019'),
 ('MT-2025-00020', 'MNO-678-IJ', 'LIC436748', 'Jorge Rodríguez López', 'Uso de celular', 'ART-34', 'Conducía usando dispositivo móvil', 'Av. Principal km 6', '2025-11-03 13:29:59', 'Oficial Martínez', 'OF-8062', 1137.18, 0.00, 1137.18, 'pending', '2025-11-07', NULL, NULL, NULL),
 ('MT-2025-00021', 'STU-234-MN', 'LIC158172', 'Carlos González Ruiz', 'Exceso de velocidad', 'ART-23', 'Circulaba a 95 km/h en zona de 43 km/h', 'Av. Principal km 9', '2025-10-23 13:29:59', 'Oficial Ramírez', 'OF-6320', 1554.29, 0.00, 1554.29, 'pending', '2025-11-07', NULL, NULL, NULL),
 ('MT-2025-00022', 'PQR-901-KL', 'LIC714762', 'Juan Pérez García', 'No respetar semáforo', 'ART-45', 'Cruzó semáforo en luz roja', 'Av. Principal km 10', '2025-11-02 13:29:59', 'Oficial González', 'OF-5074', 2124.42, 0.00, 2124.42, 'pending', '2025-11-07', NULL, NULL, NULL),
-('MT-2025-00023', 'MNO-678-IJ', 'LIC732692', 'Roberto Sánchez Torres', 'Falta de documentos', 'ART-56', 'No portaba licencia de conducir', 'Av. Principal km 4', '2025-10-26 13:29:59', 'Oficial Martínez', 'OF-7241', 1162.84, 232.57, 930.27, 'paid', '2025-11-07', 2025-10-21 13:29:59, '6', 'TFINE-00023');
+('MT-2025-00023', 'MNO-678-IJ', 'LIC732692', 'Roberto Sánchez Torres', 'Falta de documentos', 'ART-56', 'No portaba licencia de conducir', 'Av. Principal km 4', '2025-10-26 13:29:59', 'Oficial Martínez', 'OF-7241', 1162.84, 232.57, 930.27, 'paid', '2025-11-07', '2025-10-21 13:29:59', '6', 'TFINE-00023');
 
 -- ============================================================================
 -- CIVIC FINES (Multiple fines per month across 6 months)
