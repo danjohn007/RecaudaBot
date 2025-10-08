@@ -41,6 +41,10 @@ class User extends Model {
         return $this->findOneBy('username', $username) !== false;
     }
     
+    public function existsByCurp($curp) {
+        return $this->findOneBy('curp', $curp) !== false;
+    }
+    
     public function getUsersByRole($role) {
         return $this->findBy('role', $role);
     }

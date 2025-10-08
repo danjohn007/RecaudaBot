@@ -141,14 +141,22 @@
                                 <?php foreach ($licenses as $license): ?>
                                     <tr>
                                         <td><?php echo htmlspecialchars($license['id']); ?></td>
-                                        <td><?php echo htmlspecialchars($license['business_name']); ?></td>
-                                        <td><?php echo htmlspecialchars($license['owner_name']); ?></td>
-                                        <td><?php echo htmlspecialchars($license['business_address']); ?></td>
-                                        <td><?php echo htmlspecialchars($license['business_activity']); ?></td>
-                                        <td><?php echo date('d/m/Y', strtotime($license['application_date'])); ?></td>
+                                        <td><?php echo htmlspecialchars($license['business_name'] ?? 'N/A'); ?></td>
+                                        <td><?php echo htmlspecialchars($license['owner_name'] ?? 'N/A'); ?></td>
+                                        <td><?php echo htmlspecialchars($license['business_address'] ?? 'N/A'); ?></td>
+                                        <td><?php echo htmlspecialchars($license['business_activity'] ?? 'N/A'); ?></td>
                                         <td>
                                             <?php 
-                                            if ($license['expiry_date']) {
+                                            if (!empty($license['application_date'])) {
+                                                echo date('d/m/Y', strtotime($license['application_date']));
+                                            } else {
+                                                echo 'N/A';
+                                            }
+                                            ?>
+                                        </td>
+                                        <td>
+                                            <?php 
+                                            if (!empty($license['expiry_date'])) {
                                                 echo date('d/m/Y', strtotime($license['expiry_date']));
                                             } else {
                                                 echo 'N/A';
@@ -188,10 +196,23 @@
                                                class="btn btn-sm btn-info" title="Ver Detalles">
                                                 <i class="bi bi-eye"></i>
                                             </a>
-                                            <a href="<?php echo BASE_URL; ?>/admin/licencias/documentos/<?php echo $license['id']; ?>" 
-                                               class="btn btn-sm btn-secondary" title="Ver Documentos">
-                                                <i class="bi bi-file-earmark"></i>
+                                            <?php if ($license['status'] === 'pending'): ?>
+                                            <a href="<?php echo BASE_URL; ?>/admin/licencias/procesar/<?php echo $license['id']; ?>" 
+                                               class="btn btn-sm btn-success" title="Procesar">
+                                                <i class="bi bi-check-circle"></i>
                                             </a>
+                                            <?php endif; ?>
+                                            <a href="<?php echo BASE_URL; ?>/admin/licencias/editar/<?php echo $license['id']; ?>" 
+                                               class="btn btn-sm btn-warning" title="Editar">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <?php if ($license['status'] !== 'expired'): ?>
+                                            <a href="<?php echo BASE_URL; ?>/admin/licencias/suspender/<?php echo $license['id']; ?>" 
+                                               class="btn btn-sm btn-danger" title="Suspender"
+                                               onclick="return confirm('¿Está seguro de suspender esta licencia?');">
+                                                <i class="bi bi-x-circle"></i>
+                                            </a>
+                                            <?php endif; ?>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>

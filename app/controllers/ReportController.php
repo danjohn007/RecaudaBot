@@ -450,31 +450,37 @@ class ReportController extends Controller {
             'year' => $_GET['year'] ?? ''
         ];
         
-        // Build query
-        $sql = "SELECT * FROM business_licenses WHERE 1=1";
+        // Build query - join with users table to get owner name
+        $sql = "SELECT bl.*, u.full_name as owner_name, 
+                bl.address as business_address, 
+                bl.business_type as business_activity,
+                bl.created_at as application_date
+                FROM business_licenses bl
+                LEFT JOIN users u ON bl.user_id = u.id
+                WHERE 1=1";
         $params = [];
         
         if (!empty($filters['business_name'])) {
-            $sql .= " AND business_name LIKE ?";
+            $sql .= " AND bl.business_name LIKE ?";
             $params[] = '%' . $filters['business_name'] . '%';
         }
         
         if (!empty($filters['owner_name'])) {
-            $sql .= " AND owner_name LIKE ?";
+            $sql .= " AND u.full_name LIKE ?";
             $params[] = '%' . $filters['owner_name'] . '%';
         }
         
         if (!empty($filters['status'])) {
-            $sql .= " AND status = ?";
+            $sql .= " AND bl.status = ?";
             $params[] = $filters['status'];
         }
         
         if (!empty($filters['year'])) {
-            $sql .= " AND YEAR(created_at) = ?";
+            $sql .= " AND YEAR(bl.created_at) = ?";
             $params[] = $filters['year'];
         }
         
-        $sql .= " ORDER BY created_at DESC";
+        $sql .= " ORDER BY bl.created_at DESC";
         
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
@@ -706,7 +712,7 @@ class ReportController extends Controller {
         // Get traffic fines if no specific type or if traffic is selected
         if (empty($filters['fine_type']) || $filters['fine_type'] === 'traffic') {
             $sql = "SELECT 'traffic' as fine_type, folio, infraction_type, infraction_date, 
-                           base_amount, total_amount, status, vehicle_plate 
+                           base_amount, total_amount, status, license_plate 
                     FROM traffic_fines WHERE 1=1";
             $params = [];
             

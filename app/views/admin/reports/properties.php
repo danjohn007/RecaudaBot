@@ -170,6 +170,21 @@
                                                class="btn btn-sm btn-info" title="Ver Detalles">
                                                 <i class="bi bi-eye"></i>
                                             </a>
+                                            <a href="<?php echo BASE_URL; ?>/admin/predios/procesar/<?php echo $property['id']; ?>" 
+                                               class="btn btn-sm btn-success" title="Procesar">
+                                                <i class="bi bi-check-circle"></i>
+                                            </a>
+                                            <a href="<?php echo BASE_URL; ?>/admin/predios/editar/<?php echo $property['id']; ?>" 
+                                               class="btn btn-sm btn-warning" title="Editar">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <?php if (($property['status'] ?? '') !== 'suspended'): ?>
+                                            <a href="<?php echo BASE_URL; ?>/admin/predios/suspender/<?php echo $property['id']; ?>" 
+                                               class="btn btn-sm btn-danger" title="Suspender"
+                                               onclick="return confirm('¿Está seguro de suspender este predio?');">
+                                                <i class="bi bi-x-circle"></i>
+                                            </a>
+                                            <?php endif; ?>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
