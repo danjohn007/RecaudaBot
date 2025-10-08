@@ -104,6 +104,16 @@ class AuthController extends Controller {
             $this->redirect('/register');
         }
         
+        // Validate CAPTCHA
+        $captchaAnswer = isset($_POST['captcha_answer']) ? (int)$_POST['captcha_answer'] : 0;
+        $captchaSum = isset($_POST['captcha_sum']) ? (int)$_POST['captcha_sum'] : 0;
+        
+        if ($captchaAnswer !== $captchaSum || $captchaSum === 0) {
+            $_SESSION['error'] = 'La verificación de seguridad es incorrecta';
+            $_SESSION['old'] = $data;
+            $this->redirect('/register');
+        }
+        
         // Validate phone is 10 digits
         if (!preg_match('/^\d{10}$/', $data['phone'])) {
             $_SESSION['error'] = 'El teléfono debe tener exactamente 10 dígitos';
