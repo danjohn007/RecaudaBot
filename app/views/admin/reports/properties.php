@@ -138,7 +138,7 @@
                                             <?php
                                             $typeText = '';
                                             $typeClass = '';
-                                            switch($property['property_type']) {
+                                            switch($property['zone_type'] ?? '') {
                                                 case 'residential':
                                                     $typeText = 'Residencial';
                                                     $typeClass = 'primary';
@@ -151,13 +151,20 @@
                                                     $typeText = 'Industrial';
                                                     $typeClass = 'warning';
                                                     break;
+                                                case 'rural':
+                                                    $typeText = 'Rural';
+                                                    $typeClass = 'info';
+                                                    break;
+                                                default:
+                                                    $typeText = 'N/A';
+                                                    $typeClass = 'secondary';
                                             }
                                             ?>
                                             <span class="badge bg-<?php echo $typeClass; ?>"><?php echo $typeText; ?></span>
                                         </td>
-                                        <td><?php echo number_format($property['land_area'], 2); ?></td>
-                                        <td><?php echo number_format($property['construction_area'], 2); ?></td>
-                                        <td>$<?php echo number_format($property['assessed_value'], 2); ?></td>
+                                        <td><?php echo number_format($property['area_m2'] ?? 0, 2); ?></td>
+                                        <td><?php echo number_format($property['construction_m2'] ?? 0, 2); ?></td>
+                                        <td>$<?php echo number_format($property['cadastral_value'] ?? 0, 2); ?></td>
                                         <td>
                                             <a href="<?php echo BASE_URL; ?>/admin/predios/ver/<?php echo $property['id']; ?>" 
                                                class="btn btn-sm btn-info" title="Ver Detalles">

@@ -104,7 +104,7 @@
     <div class="col-md-6 mb-4">
         <div class="card shadow">
             <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-pie-chart"></i> Distribución de Obligaciones Pendientes</h5>
+                <h5 class="mb-0"><i class="bi bi-pie-chart"></i> Pagos Pendientes por Concepto</h5>
             </div>
             <div class="card-body">
                 <canvas id="obligationsChart" height="250"></canvas>
@@ -222,12 +222,12 @@ new Chart(obligationsCtx, {
     data: {
         labels: ['Impuestos Prediales', 'Multas de Tránsito', 'Multas Cívicas', 'Licencias'],
         datasets: [{
-            label: 'Obligaciones Pendientes',
+            label: 'Monto Pendiente ($)',
             data: [
-                <?php echo isset($stats['pending_taxes']) ? $stats['pending_taxes'] : 0; ?>,
-                <?php echo isset($stats['pending_traffic_fines']) ? $stats['pending_traffic_fines'] : 0; ?>,
-                <?php echo isset($stats['pending_civic_fines']) ? $stats['pending_civic_fines'] : 0; ?>,
-                <?php echo isset($stats['pending_licenses']) ? $stats['pending_licenses'] : 0; ?>
+                <?php echo isset($stats['pending_taxes_amount']) ? $stats['pending_taxes_amount'] : 0; ?>,
+                <?php echo isset($stats['pending_traffic_fines_amount']) ? $stats['pending_traffic_fines_amount'] : 0; ?>,
+                <?php echo isset($stats['pending_civic_fines_amount']) ? $stats['pending_civic_fines_amount'] : 0; ?>,
+                <?php echo isset($stats['pending_licenses_amount']) ? $stats['pending_licenses_amount'] : 0; ?>
             ],
             backgroundColor: [
                 'rgba(54, 162, 235, 0.7)',
@@ -250,6 +250,18 @@ new Chart(obligationsCtx, {
         plugins: {
             legend: {
                 position: 'bottom',
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        let label = context.label || '';
+                        if (label) {
+                            label += ': ';
+                        }
+                        label += '$' + context.parsed.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                        return label;
+                    }
+                }
             }
         }
     }
