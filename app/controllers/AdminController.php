@@ -47,6 +47,11 @@ class AdminController extends Controller {
         // Total users
         $totalUsers = $this->userModel->count();
         
+        // Today's transactions
+        $stmt = $db->prepare("SELECT COUNT(*) as count FROM payments WHERE DATE(paid_at) = CURDATE() AND status = 'completed'");
+        $stmt->execute();
+        $todayTransactions = (int)$stmt->fetch(PDO::FETCH_ASSOC)['count'];
+        
         // Pending items
         $propertyTaxModel = new PropertyTax();
         $pendingTaxes = $propertyTaxModel->count("status IN ('pending', 'overdue')");
@@ -66,6 +71,16 @@ class AdminController extends Controller {
             $monthStart = date('Y-m-01', strtotime("-$i months"));
             $monthEnd = date('Y-m-t', strtotime("-$i months"));
             $monthlyTrend[] = $this->paymentModel->getTotalRevenue($monthStart, $monthEnd);
+        }
+        
+        // User registration trend for the last 6 months
+        $userRegistrationTrend = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $monthStart = date('Y-m-01', strtotime("-$i months"));
+            $monthEnd = date('Y-m-t', strtotime("-$i months"));
+            $stmt = $db->prepare("SELECT COUNT(*) as count FROM users WHERE created_at BETWEEN ? AND ? AND role = 'citizen'");
+            $stmt->execute([$monthStart . ' 00:00:00', $monthEnd . ' 23:59:59']);
+            $userRegistrationTrend[] = (int)$stmt->fetch(PDO::FETCH_ASSOC)['count'];
         }
         
         // Get pending payment amounts by type
@@ -90,6 +105,40 @@ class AdminController extends Controller {
         $stmt = $db->prepare("SELECT COALESCE(SUM(annual_fee), 0) as total FROM business_licenses WHERE status = 'pending'");
         $stmt->execute();
         $pendingLicensesAmount = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+        
+        // Get payment statistics by type
+        $stmt = $db->prepare("SELECT COUNT(*) as count, COALESCE(SUM(amount), 0) as total FROM payments WHERE payment_type = 'property_tax' AND status = 'completed'");
+        $stmt->execute();
+        $propertyTaxStats = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        $stmt = $db->prepare("SELECT COUNT(*) as count, COALESCE(SUM(amount), 0) as total FROM payments WHERE payment_type = 'traffic_fine' AND status = 'completed'");
+        $stmt->execute();
+        $trafficFineStats = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        $stmt = $db->prepare("SELECT COUNT(*) as count, COALESCE(SUM(amount), 0) as total FROM payments WHERE payment_type = 'civic_fine' AND status = 'completed'");
+        $stmt->execute();
+        $civicFineStats = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        $stmt = $db->prepare("SELECT COUNT(*) as count, COALESCE(SUM(amount), 0) as total FROM payments WHERE payment_type = 'business_license' AND status = 'completed'");
+        $stmt->execute();
+        $licenseStats = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        $stmt = $db->prepare("SELECT COUNT(*) as count, COALESCE(SUM(amount), 0) as total FROM payments WHERE payment_type NOT IN ('property_tax', 'traffic_fine', 'civic_fine', 'business_license') AND status = 'completed'");
+        $stmt->execute();
+        $otherStats = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        // Get pending statistics by type
+        $stmt = $db->prepare("SELECT COUNT(*) as count FROM property_taxes WHERE status IN ('pending', 'overdue')");
+        $stmt->execute();
+        $pendingPropertyTaxCount = (int)$stmt->fetch(PDO::FETCH_ASSOC)['count'];
+        
+        $stmt = $db->prepare("SELECT COUNT(*) as count FROM traffic_fines WHERE status = 'pending'");
+        $stmt->execute();
+        $pendingTrafficFineCount = (int)$stmt->fetch(PDO::FETCH_ASSOC)['count'];
+        
+        $stmt = $db->prepare("SELECT COUNT(*) as count FROM civic_fines WHERE status = 'pending'");
+        $stmt->execute();
+        $pendingCivicFineCount = (int)$stmt->fetch(PDO::FETCH_ASSOC)['count'];
         
         // Get recent activity (last 10 activities)
         $recentActivity = [];
@@ -131,16 +180,32 @@ class AdminController extends Controller {
             'year_revenue' => $yearRevenue,
             'revenue_by_type' => $revenueByType,
             'total_users' => $totalUsers,
+            'today_transactions' => $todayTransactions,
             'pending_taxes' => $pendingTaxes,
             'pending_fines' => $pendingTrafficFines + $pendingCivicFines,
             'pending_traffic_fines' => $pendingTrafficFines,
             'pending_civic_fines' => $pendingCivicFines,
             'pending_licenses' => $pendingLicenses,
             'monthly_trend' => $monthlyTrend,
+            'user_registration_trend' => $userRegistrationTrend,
             'pending_taxes_amount' => $pendingTaxesAmount,
             'pending_traffic_fines_amount' => $pendingTrafficFinesAmount,
             'pending_civic_fines_amount' => $pendingCivicFinesAmount,
             'pending_licenses_amount' => $pendingLicensesAmount,
+            'property_tax_count' => $propertyTaxStats['count'],
+            'property_tax_amount' => $propertyTaxStats['total'],
+            'traffic_fine_count' => $trafficFineStats['count'],
+            'traffic_fine_amount' => $trafficFineStats['total'],
+            'civic_fine_count' => $civicFineStats['count'],
+            'civic_fine_amount' => $civicFineStats['total'],
+            'license_count' => $licenseStats['count'],
+            'license_amount' => $licenseStats['total'],
+            'other_count' => $otherStats['count'],
+            'other_amount' => $otherStats['total'],
+            'pending_property_tax_count' => $pendingPropertyTaxCount,
+            'pending_property_tax_amount' => $pendingTaxesAmount,
+            'pending_traffic_fine_count' => $pendingTrafficFineCount,
+            'pending_civic_fine_count' => $pendingCivicFineCount,
             'recent_activity' => $recentActivity
         ];
     }

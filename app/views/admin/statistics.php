@@ -284,7 +284,7 @@ new Chart(userRegistrationCtx, {
         labels: ['Mes -5', 'Mes -4', 'Mes -3', 'Mes -2', 'Mes -1', 'Mes Actual'],
         datasets: [{
             label: 'Nuevos Usuarios',
-            data: [12, 19, 15, 22, 18, 25],
+            data: <?php echo isset($stats['user_registration_trend']) ? json_encode($stats['user_registration_trend']) : '[0, 0, 0, 0, 0, 0]'; ?>,
             backgroundColor: 'rgba(13, 202, 240, 0.5)',
             borderColor: 'rgba(13, 202, 240, 1)',
             borderWidth: 1
