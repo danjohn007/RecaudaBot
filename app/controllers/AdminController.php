@@ -387,4 +387,141 @@ class AdminController extends Controller {
         
         $this->redirect('/admin/usuarios');
     }
+    
+    // Property management methods
+    public function viewProperty($id) {
+        $this->requireRole('admin');
+        
+        $db = Database::getInstance()->getConnection();
+        $stmt = $db->prepare("SELECT * FROM properties WHERE id = ?");
+        $stmt->execute([$id]);
+        $property = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$property) {
+            $_SESSION['error'] = 'Predio no encontrado';
+            $this->redirect('/admin/reportes/predios');
+        }
+        
+        $data = [
+            'title' => 'Ver Predio - ' . APP_NAME,
+            'property' => $property
+        ];
+        
+        $this->view('layout/header', $data);
+        $this->view('admin/properties/view', $data);
+        $this->view('layout/footer');
+    }
+    
+    public function processProperty($id) {
+        $this->requireRole('admin');
+        $_SESSION['info'] = 'Función de procesamiento en desarrollo';
+        $this->redirect('/admin/reportes/predios');
+    }
+    
+    public function editProperty($id) {
+        $this->requireRole('admin');
+        $_SESSION['info'] = 'Función de edición en desarrollo';
+        $this->redirect('/admin/reportes/predios');
+    }
+    
+    public function suspendProperty($id) {
+        $this->requireRole('admin');
+        
+        $db = Database::getInstance()->getConnection();
+        $stmt = $db->prepare("UPDATE properties SET status = 'suspended' WHERE id = ?");
+        
+        if ($stmt->execute([$id])) {
+            $this->auditLog->log($_SESSION['user_id'], 'property_suspended', 'Predio suspendido: ' . $id);
+            $_SESSION['success'] = 'Predio suspendido correctamente';
+        } else {
+            $_SESSION['error'] = 'Error al suspender predio';
+        }
+        
+        $this->redirect('/admin/reportes/predios');
+    }
+    
+    // License management methods
+    public function viewLicense($id) {
+        $this->requireRole('admin');
+        
+        $db = Database::getInstance()->getConnection();
+        $stmt = $db->prepare("SELECT bl.*, u.full_name as owner_name FROM business_licenses bl 
+                              LEFT JOIN users u ON bl.user_id = u.id WHERE bl.id = ?");
+        $stmt->execute([$id]);
+        $license = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$license) {
+            $_SESSION['error'] = 'Licencia no encontrada';
+            $this->redirect('/admin/reportes/licencias');
+        }
+        
+        $data = [
+            'title' => 'Ver Licencia - ' . APP_NAME,
+            'license' => $license
+        ];
+        
+        $this->view('layout/header', $data);
+        $this->view('admin/licenses/view', $data);
+        $this->view('layout/footer');
+    }
+    
+    public function processLicense($id) {
+        $this->requireRole('admin');
+        $_SESSION['info'] = 'Función de procesamiento en desarrollo';
+        $this->redirect('/admin/reportes/licencias');
+    }
+    
+    public function editLicense($id) {
+        $this->requireRole('admin');
+        $_SESSION['info'] = 'Función de edición en desarrollo';
+        $this->redirect('/admin/reportes/licencias');
+    }
+    
+    public function suspendLicense($id) {
+        $this->requireRole('admin');
+        
+        $db = Database::getInstance()->getConnection();
+        $stmt = $db->prepare("UPDATE business_licenses SET status = 'suspended' WHERE id = ?");
+        
+        if ($stmt->execute([$id])) {
+            $this->auditLog->log($_SESSION['user_id'], 'license_suspended', 'Licencia suspendida: ' . $id);
+            $_SESSION['success'] = 'Licencia suspendida correctamente';
+        } else {
+            $_SESSION['error'] = 'Error al suspender licencia';
+        }
+        
+        $this->redirect('/admin/reportes/licencias');
+    }
+    
+    // Fine management methods
+    public function processFine($id) {
+        $this->requireRole('admin');
+        $_SESSION['info'] = 'Función de procesamiento en desarrollo';
+        $this->redirect('/admin/reportes/multas');
+    }
+    
+    public function editFine($id) {
+        $this->requireRole('admin');
+        $_SESSION['info'] = 'Función de edición en desarrollo';
+        $this->redirect('/admin/reportes/multas');
+    }
+    
+    public function suspendFine($id) {
+        $this->requireRole('admin');
+        
+        $type = $_GET['type'] ?? 'traffic';
+        $table = $type === 'traffic' ? 'traffic_fines' : 'civic_fines';
+        
+        $db = Database::getInstance()->getConnection();
+        $stmt = $db->prepare("UPDATE $table SET status = 'cancelled' WHERE id = ?");
+        
+        if ($stmt->execute([$id])) {
+            $this->auditLog->log($_SESSION['user_id'], 'fine_suspended', 'Multa suspendida: ' . $id);
+            $_SESSION['success'] = 'Multa suspendida correctamente';
+        } else {
+            $_SESSION['error'] = 'Error al suspender multa';
+        }
+        
+        $this->redirect('/admin/reportes/multas');
+    }
 }

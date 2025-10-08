@@ -57,8 +57,20 @@
                     <div class="mb-3 form-check">
                         <input type="checkbox" class="form-check-input" id="terms" required>
                         <label class="form-check-label" for="terms">
-                            Acepto los <a href="#">términos y condiciones</a>
+                            Acepto los <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">términos y condiciones</a>
                         </label>
+                    </div>
+
+                    <!-- CAPTCHA -->
+                    <div class="mb-3">
+                        <label class="form-label">Verificación de Seguridad *</label>
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <p class="mb-2">¿Cuánto es <strong><span id="captcha_num1"></span> + <span id="captcha_num2"></span></strong>?</p>
+                                <input type="number" class="form-control" id="captcha_answer" name="captcha_answer" required placeholder="Ingrese el resultado">
+                                <input type="hidden" id="captcha_sum" name="captcha_sum">
+                            </div>
+                        </div>
                     </div>
 
                     <button type="submit" class="btn btn-primary w-100">
@@ -78,12 +90,74 @@
 
 <?php unset($_SESSION['old']); ?>
 
+<!-- Terms and Conditions Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="termsModalLabel">Términos y Condiciones</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <h6>1. Aceptación de Términos</h6>
+                <p>Al registrarse en RecaudaBot, usted acepta cumplir con estos términos y condiciones de uso.</p>
+                
+                <h6>2. Uso del Servicio</h6>
+                <p>RecaudaBot es una plataforma para la gestión de trámites municipales incluyendo impuestos prediales, licencias de funcionamiento, y multas de tránsito y cívicas.</p>
+                
+                <h6>3. Responsabilidad del Usuario</h6>
+                <p>El usuario es responsable de:</p>
+                <ul>
+                    <li>Mantener la confidencialidad de su cuenta y contraseña</li>
+                    <li>Proporcionar información veraz y actualizada</li>
+                    <li>Cumplir con las obligaciones fiscales y administrativas</li>
+                    <li>Notificar cualquier uso no autorizado de su cuenta</li>
+                </ul>
+                
+                <h6>4. Privacidad de Datos</h6>
+                <p>Sus datos personales serán tratados conforme a la Ley de Protección de Datos Personales. La información proporcionada será utilizada únicamente para fines administrativos y de recaudación municipal.</p>
+                
+                <h6>5. Pagos y Transacciones</h6>
+                <p>Los pagos realizados a través de la plataforma son procesados de manera segura. El municipio no se hace responsable por errores en la información proporcionada por el usuario al realizar pagos.</p>
+                
+                <h6>6. Modificaciones</h6>
+                <p>El municipio se reserva el derecho de modificar estos términos en cualquier momento. Los cambios serán notificados a través de la plataforma.</p>
+                
+                <h6>7. Limitación de Responsabilidad</h6>
+                <p>El municipio no será responsable por interrupciones del servicio, errores técnicos o pérdida de información, salvo en casos de negligencia comprobada.</p>
+                
+                <h6>8. Ley Aplicable</h6>
+                <p>Estos términos se rigen por las leyes de México y la jurisdicción local del municipio.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+// Generate CAPTCHA
+function generateCaptcha() {
+    const num1 = Math.floor(Math.random() * 20) + 1;
+    const num2 = Math.floor(Math.random() * 20) + 1;
+    const sum = num1 + num2;
+    
+    document.getElementById('captcha_num1').textContent = num1;
+    document.getElementById('captcha_num2').textContent = num2;
+    document.getElementById('captcha_sum').value = sum;
+}
+
+// Initialize CAPTCHA on page load
+generateCaptcha();
+
 document.getElementById('registerForm').addEventListener('submit', function(e) {
     const password = document.getElementById('password').value;
     const confirmPassword = document.getElementById('confirm_password').value;
     const curp = document.getElementById('curp').value;
     const phone = document.getElementById('phone').value;
+    const captchaAnswer = parseInt(document.getElementById('captcha_answer').value);
+    const captchaSum = parseInt(document.getElementById('captcha_sum').value);
     
     if (password !== confirmPassword) {
         e.preventDefault();
@@ -106,6 +180,14 @@ document.getElementById('registerForm').addEventListener('submit', function(e) {
     if (!/^\d{10}$/.test(phone)) {
         e.preventDefault();
         alert('El teléfono debe tener exactamente 10 dígitos numéricos');
+        return;
+    }
+    
+    if (captchaAnswer !== captchaSum) {
+        e.preventDefault();
+        alert('La respuesta del CAPTCHA es incorrecta. Por favor intente nuevamente.');
+        generateCaptcha(); // Generate new CAPTCHA
+        document.getElementById('captcha_answer').value = '';
         return;
     }
 });

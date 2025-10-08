@@ -169,6 +169,23 @@ $router->get('/admin/reportes/exportar', [new ReportController(), 'export']);
 $router->get('/admin/reportes/predios/exportar', [new ReportController(), 'exportProperties']);
 $router->get('/admin/reportes/multas/exportar', [new ReportController(), 'exportFines']);
 
+// Property admin routes
+$router->get('/admin/predios/ver/{id}', [new AdminController(), 'viewProperty']);
+$router->get('/admin/predios/procesar/{id}', [new AdminController(), 'processProperty']);
+$router->get('/admin/predios/editar/{id}', [new AdminController(), 'editProperty']);
+$router->get('/admin/predios/suspender/{id}', [new AdminController(), 'suspendProperty']);
+
+// License admin routes
+$router->get('/admin/licencias/ver/{id}', [new AdminController(), 'viewLicense']);
+$router->get('/admin/licencias/procesar/{id}', [new AdminController(), 'processLicense']);
+$router->get('/admin/licencias/editar/{id}', [new AdminController(), 'editLicense']);
+$router->get('/admin/licencias/suspender/{id}', [new AdminController(), 'suspendLicense']);
+
+// Fine admin routes
+$router->get('/admin/multas/procesar/{id}', [new AdminController(), 'processFine']);
+$router->get('/admin/multas/editar/{id}', [new AdminController(), 'editFine']);
+$router->get('/admin/multas/suspender/{id}', [new AdminController(), 'suspendFine']);
+
 // API routes
 $router->get('/api/dashboard/stats', [new AdminController(), 'getStats']);
 $router->get('/api/payments/export', [new AdminController(), 'exportPayments']);
