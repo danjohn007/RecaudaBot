@@ -188,45 +188,62 @@
 </div>
 
 <script>
-// Monthly Revenue Chart
-const monthlyRevenueCtx = document.getElementById('monthlyRevenueChart');
-new Chart(monthlyRevenueCtx, {
-    type: 'line',
-    data: {
-        labels: ['Mes -5', 'Mes -4', 'Mes -3', 'Mes -2', 'Mes -1', 'Mes Actual'],
-        datasets: [{
-            label: 'Recaudación ($)',
-            data: <?php echo isset($stats['monthly_trend']) ? json_encode($stats['monthly_trend']) : '[0, 0, 0, 0, 0, 0]'; ?>,
-            borderColor: 'rgba(13, 110, 253, 1)',
-            backgroundColor: 'rgba(13, 110, 253, 0.1)',
-            fill: true,
-            tension: 0.4
-        }]
+// Monthly Revenue Chart using ApexCharts
+const monthlyRevenueOptions = {
+    series: [{
+        name: 'Recaudación',
+        data: <?php echo isset($stats['monthly_trend']) ? json_encode($stats['monthly_trend']) : '[0, 0, 0, 0, 0, 0]'; ?>
+    }],
+    chart: {
+        type: 'area',
+        height: 350,
+        toolbar: {
+            show: false
+        }
     },
-    options: {
-        responsive: true,
-        maintainAspectRatio: true,
-        plugins: {
-            legend: {
-                display: true,
-                position: 'top'
-            }
+    colors: ['#0D6EFD'],
+    stroke: {
+        curve: 'smooth',
+        width: 2
+    },
+    fill: {
+        type: 'gradient',
+        gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.3,
+            opacityTo: 0.1,
+            stops: [0, 90, 100]
+        }
+    },
+    dataLabels: {
+        enabled: false
+    },
+    xaxis: {
+        categories: ['Mes -5', 'Mes -4', 'Mes -3', 'Mes -2', 'Mes -1', 'Mes Actual']
+    },
+    yaxis: {
+        title: {
+            text: 'Recaudación ($)'
         },
-        scales: {
-            y: {
-                beginAtZero: true,
-                ticks: {
-                    callback: function(value) {
-                        return '$' + value.toLocaleString();
-                    }
-                }
+        labels: {
+            formatter: function (value) {
+                return '$' + value.toLocaleString('es-MX', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            }
+        }
+    },
+    tooltip: {
+        y: {
+            formatter: function (value) {
+                return '$' + value.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2});
             }
         }
     }
-});
+};
 
-// Revenue by Type Chart
-const revenueByTypeCtx = document.getElementById('revenueByTypeChart');
+const monthlyRevenueChart = new ApexCharts(document.querySelector("#monthlyRevenueChart"), monthlyRevenueOptions);
+monthlyRevenueChart.render();
+
+// Revenue by Type Chart using ApexCharts
 <?php if (!empty($stats['revenue_by_type'])): ?>
 const revenueData = <?php echo json_encode($stats['revenue_by_type']); ?>;
 const typeLabels = revenueData.map(item => {
@@ -244,63 +261,92 @@ const typeLabels = ['Impuesto Predial', 'Licencias', 'Multas Tránsito', 'Multas
 const typeAmounts = [0, 0, 0, 0];
 <?php endif; ?>
 
-new Chart(revenueByTypeCtx, {
-    type: 'doughnut',
-    data: {
-        labels: typeLabels,
-        datasets: [{
-            data: typeAmounts,
-            backgroundColor: [
-                'rgba(13, 110, 253, 0.7)',
-                'rgba(25, 135, 84, 0.7)',
-                'rgba(255, 193, 7, 0.7)',
-                'rgba(220, 53, 69, 0.7)'
-            ],
-            borderColor: [
-                'rgba(13, 110, 253, 1)',
-                'rgba(25, 135, 84, 1)',
-                'rgba(255, 193, 7, 1)',
-                'rgba(220, 53, 69, 1)'
-            ],
-            borderWidth: 2
-        }]
+const revenueByTypeOptions = {
+    series: typeAmounts,
+    chart: {
+        type: 'donut',
+        height: 350
     },
-    options: {
-        responsive: true,
-        maintainAspectRatio: true,
-        plugins: {
+    labels: typeLabels,
+    colors: ['#0D6EFD', '#198754', '#FFC107', '#DC3545'],
+    legend: {
+        position: 'bottom'
+    },
+    dataLabels: {
+        enabled: true,
+        formatter: function (val, opts) {
+            return val.toFixed(1) + '%';
+        }
+    },
+    tooltip: {
+        y: {
+            formatter: function (value) {
+                return '$' + value.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            }
+        }
+    },
+    responsive: [{
+        breakpoint: 480,
+        options: {
+            chart: {
+                width: 300
+            },
             legend: {
                 position: 'bottom'
             }
         }
-    }
-});
+    }]
+};
 
-// User Registration Chart
-const userRegistrationCtx = document.getElementById('userRegistrationChart');
-new Chart(userRegistrationCtx, {
-    type: 'bar',
-    data: {
-        labels: ['Mes -5', 'Mes -4', 'Mes -3', 'Mes -2', 'Mes -1', 'Mes Actual'],
-        datasets: [{
-            label: 'Nuevos Usuarios',
-            data: <?php echo isset($stats['user_registration_trend']) ? json_encode($stats['user_registration_trend']) : '[0, 0, 0, 0, 0, 0]'; ?>,
-            backgroundColor: 'rgba(13, 202, 240, 0.5)',
-            borderColor: 'rgba(13, 202, 240, 1)',
-            borderWidth: 1
-        }]
+const revenueByTypeChart = new ApexCharts(document.querySelector("#revenueByTypeChart"), revenueByTypeOptions);
+revenueByTypeChart.render();
+
+// User Registration Chart using ApexCharts
+const userRegistrationOptions = {
+    series: [{
+        name: 'Nuevos Usuarios',
+        data: <?php echo isset($stats['user_registration_trend']) ? json_encode($stats['user_registration_trend']) : '[0, 0, 0, 0, 0, 0]'; ?>
+    }],
+    chart: {
+        type: 'bar',
+        height: 350,
+        toolbar: {
+            show: false
+        }
     },
-    options: {
-        responsive: true,
-        maintainAspectRatio: true,
-        scales: {
-            y: {
-                beginAtZero: true,
-                ticks: {
-                    stepSize: 5
-                }
+    colors: ['#0DCAF0'],
+    plotOptions: {
+        bar: {
+            columnWidth: '50%',
+            borderRadius: 4
+        }
+    },
+    dataLabels: {
+        enabled: false
+    },
+    xaxis: {
+        categories: ['Mes -5', 'Mes -4', 'Mes -3', 'Mes -2', 'Mes -1', 'Mes Actual']
+    },
+    yaxis: {
+        title: {
+            text: 'Cantidad'
+        },
+        tickAmount: 5,
+        labels: {
+            formatter: function (value) {
+                return Math.floor(value);
+            }
+        }
+    },
+    tooltip: {
+        y: {
+            formatter: function (value) {
+                return value + ' usuarios';
             }
         }
     }
-});
+};
+
+const userRegistrationChart = new ApexCharts(document.querySelector("#userRegistrationChart"), userRegistrationOptions);
+userRegistrationChart.render();
 </script>

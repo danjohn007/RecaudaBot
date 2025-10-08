@@ -201,9 +201,8 @@
 </div>
 
 <script>
-// Chart for revenue by type
+// Chart for revenue by type using ApexCharts
 <?php if (!empty($stats['revenue_by_type'])): ?>
-const ctx = document.getElementById('revenueChart');
 const revenueData = <?php echo json_encode($stats['revenue_by_type']); ?>;
 
 const labels = revenueData.map(item => {
@@ -218,125 +217,155 @@ const labels = revenueData.map(item => {
 
 const amounts = revenueData.map(item => parseFloat(item.total));
 
-new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: labels,
-        datasets: [{
-            label: 'Recaudación ($)',
-            data: amounts,
-            backgroundColor: [
-                'rgba(54, 162, 235, 0.5)',
-                'rgba(75, 192, 192, 0.5)',
-                'rgba(255, 206, 86, 0.5)',
-                'rgba(255, 99, 132, 0.5)'
-            ],
-            borderColor: [
-                'rgba(54, 162, 235, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(255, 99, 132, 1)'
-            ],
-            borderWidth: 1
-        }]
+const revenueChartOptions = {
+    series: [{
+        name: 'Recaudación',
+        data: amounts
+    }],
+    chart: {
+        type: 'bar',
+        height: 300,
+        toolbar: {
+            show: false
+        }
     },
-    options: {
-        responsive: true,
-        scales: {
-            y: {
-                beginAtZero: true
+    colors: ['#36A2EB', '#4BC0C0', '#FFCE56', '#FF6384'],
+    plotOptions: {
+        bar: {
+            columnWidth: '60%',
+            distributed: true
+        }
+    },
+    dataLabels: {
+        enabled: false
+    },
+    legend: {
+        show: false
+    },
+    xaxis: {
+        categories: labels
+    },
+    yaxis: {
+        title: {
+            text: 'Monto ($)'
+        },
+        labels: {
+            formatter: function (value) {
+                return '$' + value.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            }
+        }
+    },
+    tooltip: {
+        y: {
+            formatter: function (value) {
+                return '$' + value.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2});
             }
         }
     }
-});
+};
+
+const revenueChart = new ApexCharts(document.querySelector("#revenueChart"), revenueChartOptions);
+revenueChart.render();
 <?php endif; ?>
 
-// Chart for pending obligations distribution (Pie Chart)
-const obligationsCtx = document.getElementById('obligationsChart');
-new Chart(obligationsCtx, {
-    type: 'doughnut',
-    data: {
-        labels: ['Impuestos Prediales', 'Multas de Tránsito', 'Multas Cívicas', 'Licencias'],
-        datasets: [{
-            label: 'Monto Pendiente ($)',
-            data: [
-                <?php echo isset($stats['pending_taxes_amount']) ? $stats['pending_taxes_amount'] : 0; ?>,
-                <?php echo isset($stats['pending_traffic_fines_amount']) ? $stats['pending_traffic_fines_amount'] : 0; ?>,
-                <?php echo isset($stats['pending_civic_fines_amount']) ? $stats['pending_civic_fines_amount'] : 0; ?>,
-                <?php echo isset($stats['pending_licenses_amount']) ? $stats['pending_licenses_amount'] : 0; ?>
-            ],
-            backgroundColor: [
-                'rgba(54, 162, 235, 0.7)',
-                'rgba(255, 206, 86, 0.7)',
-                'rgba(255, 99, 132, 0.7)',
-                'rgba(75, 192, 192, 0.7)'
-            ],
-            borderColor: [
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(255, 99, 132, 1)',
-                'rgba(75, 192, 192, 1)'
-            ],
-            borderWidth: 1
-        }]
+// Chart for pending obligations distribution (Donut Chart) using ApexCharts
+const obligationsChartOptions = {
+    series: [
+        <?php echo isset($stats['pending_taxes_amount']) ? $stats['pending_taxes_amount'] : 0; ?>,
+        <?php echo isset($stats['pending_traffic_fines_amount']) ? $stats['pending_traffic_fines_amount'] : 0; ?>,
+        <?php echo isset($stats['pending_civic_fines_amount']) ? $stats['pending_civic_fines_amount'] : 0; ?>,
+        <?php echo isset($stats['pending_licenses_amount']) ? $stats['pending_licenses_amount'] : 0; ?>
+    ],
+    chart: {
+        type: 'donut',
+        height: 250
     },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                position: 'bottom',
+    labels: ['Impuestos Prediales', 'Multas de Tránsito', 'Multas Cívicas', 'Licencias'],
+    colors: ['#36A2EB', '#FFCE56', '#FF6384', '#4BC0C0'],
+    legend: {
+        position: 'bottom'
+    },
+    dataLabels: {
+        enabled: true,
+        formatter: function (val, opts) {
+            return val.toFixed(1) + '%';
+        }
+    },
+    tooltip: {
+        y: {
+            formatter: function (value) {
+                return '$' + value.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            }
+        }
+    },
+    responsive: [{
+        breakpoint: 480,
+        options: {
+            chart: {
+                width: 200
             },
-            tooltip: {
-                callbacks: {
-                    label: function(context) {
-                        let label = context.label || '';
-                        if (label) {
-                            label += ': ';
-                        }
-                        label += '$' + context.parsed.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-                        return label;
-                    }
-                }
-            }
-        }
-    }
-});
-
-// Chart for revenue trend (Line Chart)
-const trendCtx = document.getElementById('trendChart');
-new Chart(trendCtx, {
-    type: 'line',
-    data: {
-        labels: ['Mes -5', 'Mes -4', 'Mes -3', 'Mes -2', 'Mes -1', 'Mes Actual'],
-        datasets: [{
-            label: 'Recaudación Total ($)',
-            data: <?php echo isset($stats['monthly_trend']) ? json_encode($stats['monthly_trend']) : '[0, 0, 0, 0, 0, ' . ($stats['month_revenue'] ?? 0) . ']'; ?>,
-            borderColor: 'rgba(75, 192, 192, 1)',
-            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-            fill: true,
-            tension: 0.4
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
             legend: {
-                display: true,
-                position: 'top'
+                position: 'bottom'
             }
+        }
+    }]
+};
+
+const obligationsChart = new ApexCharts(document.querySelector("#obligationsChart"), obligationsChartOptions);
+obligationsChart.render();
+
+// Chart for revenue trend (Line Chart) using ApexCharts
+const trendChartOptions = {
+    series: [{
+        name: 'Recaudación Total',
+        data: <?php echo isset($stats['monthly_trend']) ? json_encode($stats['monthly_trend']) : '[0, 0, 0, 0, 0, ' . ($stats['month_revenue'] ?? 0) . ']'; ?>
+    }],
+    chart: {
+        type: 'area',
+        height: 250,
+        toolbar: {
+            show: false
+        }
+    },
+    colors: ['#4BC0C0'],
+    stroke: {
+        curve: 'smooth',
+        width: 2
+    },
+    fill: {
+        type: 'gradient',
+        gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.4,
+            opacityTo: 0.1,
+            stops: [0, 90, 100]
+        }
+    },
+    dataLabels: {
+        enabled: false
+    },
+    xaxis: {
+        categories: ['Mes -5', 'Mes -4', 'Mes -3', 'Mes -2', 'Mes -1', 'Mes Actual']
+    },
+    yaxis: {
+        title: {
+            text: 'Recaudación ($)'
         },
-        scales: {
-            y: {
-                beginAtZero: true,
-                ticks: {
-                    callback: function(value) {
-                        return '$' + value.toLocaleString();
-                    }
-                }
+        labels: {
+            formatter: function (value) {
+                return '$' + value.toLocaleString('es-MX', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            }
+        }
+    },
+    tooltip: {
+        y: {
+            formatter: function (value) {
+                return '$' + value.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2});
             }
         }
     }
-});
+};
+
+const trendChart = new ApexCharts(document.querySelector("#trendChart"), trendChartOptions);
+trendChart.render();
 </script>
