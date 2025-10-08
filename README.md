@@ -170,9 +170,17 @@ exit;
 # Importar esquema (estructura de tablas)
 mysql -u root -p recaudabot < assets/sql/schema.sql
 
-# Importar datos de ejemplo
+# Opción A: Datos de ejemplo básicos (original)
 mysql -u root -p recaudabot < assets/sql/sample_data.sql
+
+# Opción B: Datos de ejemplo comprehensivos (RECOMENDADO)
+# Incluye 75+ pagos distribuidos en 6 meses para poblar todas las gráficas
+mysql -u root -p recaudabot < assets/sql/comprehensive_sample_data.sql
 ```
+
+> **💡 Recomendación**: Usar `comprehensive_sample_data.sql` para desarrollo y pruebas, ya que incluye datos extensivos que garantizan que todas las gráficas del Dashboard Administrativo y Estadísticas del Sistema muestren información correctamente.
+> 
+> Ver detalles completos en: [`assets/sql/README_SAMPLE_DATA.md`](assets/sql/README_SAMPLE_DATA.md)
 
 ### 5. Configurar las Credenciales
 
