@@ -36,6 +36,9 @@ class AdminController extends Controller {
         $thisMonth = date('Y-m-01');
         $thisYear = date('Y-01-01');
         
+        // Get database connection
+        $db = Database::getInstance()->getConnection();
+        
         // Total revenue
         $totalRevenue = $this->paymentModel->getTotalRevenue();
         $monthRevenue = $this->paymentModel->getTotalRevenue($thisMonth, date('Y-m-t'));
@@ -84,8 +87,6 @@ class AdminController extends Controller {
         }
         
         // Get pending payment amounts by type
-        $db = Database::getInstance()->getConnection();
-        
         // Pending property taxes amount
         $stmt = $db->prepare("SELECT COALESCE(SUM(total_amount), 0) as total FROM property_taxes WHERE status IN ('pending', 'overdue')");
         $stmt->execute();
