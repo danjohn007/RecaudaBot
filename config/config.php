@@ -6,8 +6,8 @@
 
 // Database Configuration
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'fix360_recaudabot');
-define('DB_USER', 'fix360_recaudabot');
+define('DB_NAME', 'recaudab_colon');
+define('DB_USER', 'recaudab_colon');
 define('DB_PASS', 'Danjohn007!');
 define('DB_CHARSET', 'utf8mb4');
 
