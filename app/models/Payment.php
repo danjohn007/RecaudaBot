@@ -31,7 +31,7 @@ class Payment extends Model {
         $params = [];
         
         if ($startDate && $endDate) {
-            $sql .= " AND paid_at BETWEEN ? AND ?";
+            $sql .= " AND DATE(paid_at) BETWEEN ? AND ?";
             $params = [$startDate, $endDate];
         }
         
@@ -46,7 +46,7 @@ class Payment extends Model {
         $params = [];
         
         if ($startDate && $endDate) {
-            $sql .= " AND paid_at BETWEEN ? AND ?";
+            $sql .= " AND DATE(paid_at) BETWEEN ? AND ?";
             $params = [$startDate, $endDate];
         }
         
