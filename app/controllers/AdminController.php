@@ -107,26 +107,25 @@ class AdminController extends Controller {
         $stmt->execute();
         $pendingLicensesAmount = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
         
-        // Get payment statistics by type
-        $stmt = $db->prepare("SELECT COUNT(*) as count, COALESCE(SUM(amount), 0) as total FROM payments WHERE payment_type = 'property_tax' AND status = 'completed'");
+        // Get payment statistics by type from source tables
+        $stmt = $db->prepare("SELECT COUNT(*) as count, COALESCE(SUM(total_amount), 0) as total FROM property_taxes WHERE status = 'paid'");
         $stmt->execute();
         $propertyTaxStats = $stmt->fetch(PDO::FETCH_ASSOC);
         
-        $stmt = $db->prepare("SELECT COUNT(*) as count, COALESCE(SUM(amount), 0) as total FROM payments WHERE payment_type = 'traffic_fine' AND status = 'completed'");
+        $stmt = $db->prepare("SELECT COUNT(*) as count, COALESCE(SUM(total_amount), 0) as total FROM traffic_fines WHERE status = 'paid'");
         $stmt->execute();
         $trafficFineStats = $stmt->fetch(PDO::FETCH_ASSOC);
         
-        $stmt = $db->prepare("SELECT COUNT(*) as count, COALESCE(SUM(amount), 0) as total FROM payments WHERE payment_type = 'civic_fine' AND status = 'completed'");
+        $stmt = $db->prepare("SELECT COUNT(*) as count, COALESCE(SUM(total_amount), 0) as total FROM civic_fines WHERE status = 'paid'");
         $stmt->execute();
         $civicFineStats = $stmt->fetch(PDO::FETCH_ASSOC);
         
-        $stmt = $db->prepare("SELECT COUNT(*) as count, COALESCE(SUM(amount), 0) as total FROM payments WHERE payment_type = 'business_license' AND status = 'completed'");
+        $stmt = $db->prepare("SELECT COUNT(*) as count, COALESCE(SUM(annual_fee), 0) as total FROM business_licenses WHERE status = 'approved'");
         $stmt->execute();
         $licenseStats = $stmt->fetch(PDO::FETCH_ASSOC);
         
-        $stmt = $db->prepare("SELECT COUNT(*) as count, COALESCE(SUM(amount), 0) as total FROM payments WHERE payment_type NOT IN ('property_tax', 'traffic_fine', 'civic_fine', 'business_license') AND status = 'completed'");
-        $stmt->execute();
-        $otherStats = $stmt->fetch(PDO::FETCH_ASSOC);
+        // Keep other stats as 0 since we don't have other payment types in source tables
+        $otherStats = ['count' => 0, 'total' => 0];
         
         // Get pending statistics by type
         $stmt = $db->prepare("SELECT COUNT(*) as count FROM property_taxes WHERE status IN ('pending', 'overdue')");
@@ -206,7 +205,9 @@ class AdminController extends Controller {
             'pending_property_tax_count' => $pendingPropertyTaxCount,
             'pending_property_tax_amount' => $pendingTaxesAmount,
             'pending_traffic_fine_count' => $pendingTrafficFineCount,
+            'pending_traffic_fine_amount' => $pendingTrafficFinesAmount,
             'pending_civic_fine_count' => $pendingCivicFineCount,
+            'pending_civic_fine_amount' => $pendingCivicFinesAmount,
             'recent_activity' => $recentActivity
         ];
     }
