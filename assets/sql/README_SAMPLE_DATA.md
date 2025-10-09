@@ -9,6 +9,9 @@ Este archivo contiene datos de ejemplo extensivos para el sistema RecaudaBot, di
 ### `comprehensive_sample_data.sql`
 Archivo SQL principal con datos comprehensivos para todos los módulos del sistema.
 
+### `verify_dashboard_queries.sql`
+Script de verificación que prueba todas las consultas del dashboard para confirmar que funcionan correctamente con los datos de ejemplo. Ejecutar después de cargar `comprehensive_sample_data.sql` para validar la instalación.
+
 **Contenido generado:**
 - ✅ **17 usuarios** (1 admin, 1 área municipal, 15 ciudadanos)
   - Distribuidos en los últimos 6 meses para gráfica de registro de usuarios
@@ -164,6 +167,16 @@ FROM payments
 WHERE status = 'completed'
 GROUP BY payment_type;
 ```
+
+### Verificación Completa con Script
+
+Para una verificación más completa y detallada, utilice el script de verificación:
+
+```bash
+mysql -u usuario -p nombre_base_de_datos < assets/sql/verify_dashboard_queries.sql
+```
+
+Este script ejecuta todas las consultas que utilizan las gráficas del dashboard y muestra los resultados en un formato legible.
 
 ## 🔄 Regenerar los Datos
 
