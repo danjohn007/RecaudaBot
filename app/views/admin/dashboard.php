@@ -202,8 +202,8 @@
 
 <script>
 // Chart for revenue by type
-<?php if (!empty($stats['revenue_by_type'])): ?>
 const ctx = document.getElementById('revenueChart');
+<?php if (!empty($stats['revenue_by_type'])): ?>
 const revenueData = <?php echo json_encode($stats['revenue_by_type']); ?>;
 
 const labels = revenueData.map(item => {
@@ -217,6 +217,10 @@ const labels = revenueData.map(item => {
 });
 
 const amounts = revenueData.map(item => parseFloat(item.total));
+<?php else: ?>
+const labels = ['Impuesto Predial', 'Licencias', 'Multas Tránsito', 'Multas Cívicas'];
+const amounts = [0, 0, 0, 0];
+<?php endif; ?>
 
 new Chart(ctx, {
     type: 'bar',
@@ -249,7 +253,6 @@ new Chart(ctx, {
         }
     }
 });
-<?php endif; ?>
 
 // Chart for pending obligations distribution (Pie Chart)
 const obligationsCtx = document.getElementById('obligationsChart');
