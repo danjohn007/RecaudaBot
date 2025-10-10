@@ -5,7 +5,7 @@ RewriteCond %{HTTPS} off
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 # Allow direct access to specific PHP files
-RewriteCond %{REQUEST_URI} ^.*/(logout_direct|logout_directo|test_logout|debug_|test_403).*\.php$
+RewriteCond %{REQUEST_URI} ^.*/(logout_direct|logout_directo|logout_simple|test_logout|debug_|test_403).*\.php$
 RewriteRule ^.*$ - [L]
 
 # Handle static files directly

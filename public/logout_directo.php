@@ -1,22 +1,20 @@
 <?php
 // Logout directo sin router - para evitar el 403
 require_once '../config/config.php';
-require_once '../app/models/AuditLog.php';
 
 // Iniciar sesión
 session_start();
 
-// Log del intento
+// Log del intento (simple log sin modelo)
 error_log("Logout directo - IP: " . $_SERVER['REMOTE_ADDR'] . " - Time: " . date('Y-m-d H:i:s'));
 
 // Variables para auditoría
 $user_id = $_SESSION['user_id'] ?? null;
 
 try {
-    // Log de auditoría si hay usuario
+    // Log de auditoría simplificado
     if ($user_id) {
-        $auditLog = new AuditLog();
-        $auditLog->log($user_id, 'logout_direct');
+        error_log("Logout directo - User ID: " . $user_id . " - " . date('Y-m-d H:i:s'));
     }
     
     // Limpiar sesión
