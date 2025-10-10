@@ -150,7 +150,7 @@
                 </ul>
                 <ul class="navbar-nav">
                     <?php if (isset($_SESSION['user_id'])): ?>
-                        <?php if (isset($_SESSION['user_role']) && ($_SESSION['user_role'] === 'admin' || $_SESSION['user_role'] === 'municipal_area')): ?>
+                        <?php if (isset($_SESSION['role']) && ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'municipal_area')): ?>
                         <li class="nav-item">
                             <a class="nav-link" href="<?php echo BASE_URL; ?>/admin">
                                 <i class="bi bi-speedometer2"></i> Admin
@@ -172,7 +172,15 @@
                                 <i class="bi bi-person-circle"></i> <?php echo htmlspecialchars($_SESSION['full_name']); ?>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>/perfil">Mi Perfil</a></li>
+                                <?php if (isset($_SESSION['role']) && ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'municipal_area')): ?>
+                                <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>/admin">
+                                    <i class="bi bi-speedometer2"></i> Dashboard Administrativo
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <?php endif; ?>
+                                <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>/perfil">
+                                    <i class="bi bi-person"></i> Mi Perfil
+                                </a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="<?php echo PUBLIC_URL; ?>/logout_extremo.php">
                                     <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
