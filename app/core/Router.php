@@ -39,11 +39,25 @@ class Router {
             $uri = substr($uri, 0, $pos);
         }
         
-        // Remove base path
-        $base_path = str_replace('/index.php', '', $_SERVER['SCRIPT_NAME']);
-        $base_path = str_replace('/public/index.php', '', $base_path);
-        if (strpos($uri, $base_path) === 0) {
+        // Remove base path - improved detection
+        $script_name = $_SERVER['SCRIPT_NAME'];
+        $base_path = dirname($script_name);
+        
+        // Handle different scenarios
+        if ($base_path === '/' || $base_path === '\\') {
+            $base_path = '';
+        }
+        
+        // Remove /public from base path if present
+        $base_path = str_replace('/public', '', $base_path);
+        
+        if (!empty($base_path) && strpos($uri, $base_path) === 0) {
             $uri = substr($uri, strlen($base_path));
+        }
+        
+        // Handle /public prefix in URI
+        if (strpos($uri, '/public') === 0) {
+            $uri = substr($uri, 7); // Remove '/public'
         }
         
         // Ensure URI starts with /

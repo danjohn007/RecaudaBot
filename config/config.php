@@ -14,12 +14,19 @@ define('DB_CHARSET', 'utf8mb4');
 // Auto-detect URL Base
 $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://';
 $host = $_SERVER['HTTP_HOST'];
-$script = $_SERVER['SCRIPT_NAME'];
-$base_path = str_replace('/index.php', '', $script);
-$base_path = str_replace('/public/index.php', '', $base_path);
+$script_name = $_SERVER['SCRIPT_NAME'];
+
+// Simple base path detection
+$base_path = dirname($script_name);
+if ($base_path === '/' || $base_path === '\\') {
+    $base_path = '';
+}
+
+// Remove /public from base path if present
+$base_path = str_replace('/public', '', $base_path);
 
 define('BASE_URL', $protocol . $host . $base_path);
-define('PUBLIC_URL', BASE_URL . '/public');
+define('PUBLIC_URL', BASE_URL);
 
 // Application Settings
 define('APP_NAME', 'RecaudaBot');

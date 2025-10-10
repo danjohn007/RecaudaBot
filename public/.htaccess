@@ -1,14 +1,37 @@
 RewriteEngine On
 
-# Redirect all requests to index.php
+# Allow direct access to specific PHP files
+RewriteCond %{REQUEST_URI} ^.*/(logout_direct|test_logout|debug_).*\.php$
+RewriteRule ^.*$ - [L]
+
+# Handle static files directly
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^.*$ - [L]
+
+# Handle static directories directly
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^.*$ - [L]
+
+# Route everything else to index.php
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php [QSA,L]
 
 # Security headers
-Header set X-Content-Type-Options "nosniff"
-Header set X-Frame-Options "SAMEORIGIN"
-Header set X-XSS-Protection "1; mode=block"
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+    
+    # Set correct MIME types for CSS and JS files
+    <FilesMatch "\.(css)$">
+        Header set Content-Type "text/css"
+    </FilesMatch>
+
+    <FilesMatch "\.(js)$">
+        Header set Content-Type "application/javascript"
+    </FilesMatch>
+</IfModule>
 
 # Disable directory browsing
 Options -Indexes

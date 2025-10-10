@@ -51,11 +51,15 @@ $router = new Router();
 
 // Authentication routes
 $router->get('/', [new HomeController(), 'index']);
+$router->get('/public', [new HomeController(), 'index']);
+$router->get('/public/', [new HomeController(), 'index']);
 $router->get('/login', [new AuthController(), 'showLogin']);
 $router->post('/login', [new AuthController(), 'login']);
 $router->get('/register', [new AuthController(), 'showRegister']);
 $router->post('/register', [new AuthController(), 'register']);
 $router->get('/logout', [new AuthController(), 'logout']);
+$router->get('/public/logout', [new AuthController(), 'logout']);
+$router->post('/logout', [new AuthController(), 'logout']);
 
 // Property Tax routes
 $router->get('/impuesto-predial', [new PropertyTaxController(), 'index']);

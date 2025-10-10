@@ -148,11 +148,42 @@ class AuthController extends Controller {
     }
     
     public function logout() {
-        if ($this->isAuthenticated()) {
-            $this->auditLog->log($_SESSION['user_id'], 'logout');
+        try {
+            // Log audit if user is authenticated
+            if ($this->isAuthenticated()) {
+                $this->auditLog->log($_SESSION['user_id'], 'logout');
+            }
+            
+            // Clear all session data
+            $_SESSION = array();
+            
+            // Destroy session cookie
+            if (ini_get("session.use_cookies")) {
+                $params = session_get_cookie_params();
+                setcookie(session_name(), '', time() - 42000,
+                    $params["path"], $params["domain"],
+                    $params["secure"], $params["httponly"]
+                );
+            }
+            
+            // Destroy session
+            session_destroy();
+            
+            // Start new session for flash messages
+            session_start();
+            $_SESSION['success'] = 'Sesión cerrada correctamente';
+            
+            // Direct redirect without using BASE_URL
+            $redirect_url = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . 
+                           str_replace('/public', '', dirname($_SERVER['SCRIPT_NAME']));
+            
+            header('Location: ' . $redirect_url);
+            exit();
+            
+        } catch (Exception $e) {
+            // Fallback redirect
+            header('Location: /');
+            exit();
         }
-        
-        session_destroy();
-        $this->redirect('/');
     }
 }

@@ -29,6 +29,18 @@ echo "<h3>URLs de Redirección</h3>";
 echo "<pre>";
 echo "BASE_URL: " . BASE_URL . "\n";
 echo "PUBLIC_URL: " . PUBLIC_URL . "\n";
+echo "Login URL: " . BASE_URL . "/login\n";
+echo "Logout URL: " . BASE_URL . "/logout\n";
+echo "Register URL: " . BASE_URL . "/register\n";
+echo "</pre>";
+echo "</div>";
+
+echo "<div class='debug-box'>";
+echo "<h3>Test de Rutas de Logout</h3>";
+echo "<p><a href='" . BASE_URL . "/logout' target='_blank'>Probar Logout (BASE_URL)</a></p>";
+echo "<p><a href='" . BASE_URL . "/public/logout' target='_blank'>Probar Logout (PUBLIC)</a></p>";
+echo "</div>";
+echo "PUBLIC_URL: " . PUBLIC_URL . "\n";
 echo "\nURLs después del login:\n";
 echo "Admin: " . PUBLIC_URL . "/admin\n";
 echo "Perfil: " . PUBLIC_URL . "/perfil\n";

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verificación de Logout</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .button { padding: 10px 15px; margin: 5px; border: none; border-radius: 5px; text-decoration: none; display: inline-block; }
+        .success { background: #28a745; color: white; }
+        .danger { background: #dc3545; color: white; }
+        .info { background: #17a2b8; color: white; }
+        .test-box { background: #f8f9fa; padding: 15px; margin: 10px 0; border-radius: 5px; border: 1px solid #dee2e6; }
+    </style>
+</head>
+<body>
+    <h1>Verificación de Logout - Solución Error 403</h1>
+    
+    <div class="test-box">
+        <h2>Métodos de Logout Disponibles:</h2>
+        
+        <!-- Método 1: Formulario POST (Recomendado) -->
+        <h3>1. Formulario POST (Evita error 403):</h3>
+        <form method="POST" action="logout_direct.php" style="display: inline;">
+            <button type="submit" class="button danger">🔒 Logout con POST</button>
+        </form>
+        
+        <!-- Método 2: Enlace directo GET -->
+        <h3>2. Enlace directo GET:</h3>
+        <a href="logout_direct.php" class="button info">🔗 Logout con GET</a>
+        
+        <!-- Método 3: JavaScript emergency -->
+        <h3>3. JavaScript Emergency:</h3>
+        <button onclick="emergencyLogout()" class="button danger">⚡ Emergency Logout</button>
+    </div>
+    
+    <div class="test-box">
+        <h2>Información de Sesión:</h2>
+        <p><strong>Hora actual:</strong> <?php echo date('Y-m-d H:i:s'); ?></p>
+        <p><strong>Session ID:</strong> <?php session_start(); echo session_id(); ?></p>
+        <?php if (isset($_SESSION['user_id'])): ?>
+            <p style="color: green;"><strong>✓ Usuario logueado:</strong> <?php echo htmlspecialchars($_SESSION['username'] ?? 'N/A'); ?></p>
+        <?php else: ?>
+            <p style="color: red;"><strong>✗ No hay sesión activa</strong></p>
+        <?php endif; ?>
+    </div>
+    
+    <div class="test-box">
+        <h2>Enlaces de Navegación:</h2>
+        <a href="../" class="button success">🏠 Ir al Inicio</a>
+        <a href="../login" class="button info">🔐 Ir a Login</a>
+    </div>
+
+    <script>
+    function emergencyLogout() {
+        if (confirm('¿Ejecutar logout de emergencia?')) {
+            // Clear all cookies
+            document.cookie.split(";").forEach(function(c) { 
+                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+            });
+            
+            alert('Cookies eliminadas. Redirigiendo...');
+            window.location.href = '../';
+        }
+    }
+    </script>
+</body>
+</html>

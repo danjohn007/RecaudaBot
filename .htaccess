@@ -1,15 +1,10 @@
 RewriteEngine On
 
-# Redirigir al directorio public si no es un archivo existente
+# Handle static files directly
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^.*$ - [L]
+
+# Redirect to public directory for all other requests
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_URI} !^/daniel/recaudabot/public/
 RewriteRule ^(.*)$ public/$1 [L]
-
-# Manejar archivos estáticos directamente (CSS, JS, imágenes)
-RewriteCond %{REQUEST_URI} \.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^(.*)$ public/$1 [L]
-
-# Redirección especial para el directorio raíz
-RewriteRule ^$ public/index.php [L]
