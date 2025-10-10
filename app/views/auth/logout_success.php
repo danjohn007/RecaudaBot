@@ -33,21 +33,53 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    let countdown = <?php echo $redirect_delay ?? 3; ?>;
+    console.log('Logout redirect script loaded');
+    
+    let countdown = <?php echo intval($redirect_delay ?? 3); ?>;
     const countdownElement = document.getElementById('countdown');
-    const redirectUrl = '<?php echo BASE_URL; ?>';
+    const redirectUrl = '<?php echo addslashes(BASE_URL); ?>';
+    
+    console.log('Initial countdown:', countdown);
+    console.log('Redirect URL:', redirectUrl);
+    
+    // Inicializar el countdown display
+    if (countdownElement) {
+        countdownElement.textContent = countdown;
+    }
     
     const timer = setInterval(function() {
         countdown--;
+        console.log('Countdown:', countdown);
+        
         if (countdownElement) {
             countdownElement.textContent = countdown;
         }
         
         if (countdown <= 0) {
             clearInterval(timer);
-            window.location.href = redirectUrl;
+            console.log('Redirecting to:', redirectUrl);
+            
+            // Múltiples métodos de redirección para asegurar que funcione
+            try {
+                window.location.href = redirectUrl;
+            } catch (e) {
+                console.error('Error with window.location.href:', e);
+                try {
+                    window.location.replace(redirectUrl);
+                } catch (e2) {
+                    console.error('Error with window.location.replace:', e2);
+                    // Último recurso: usar assign
+                    window.location.assign(redirectUrl);
+                }
+            }
         }
     }, 1000);
+    
+    // Backup: redirección forzada después de tiempo extra
+    setTimeout(function() {
+        console.log('Backup redirect triggered');
+        window.location.href = redirectUrl;
+    }, (<?php echo intval($redirect_delay ?? 3); ?> + 2) * 1000);
 });
 </script>
 

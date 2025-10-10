@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prueba de Redirección Automática - RecaudaBot</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="text-center mb-4">
+                            <i class="bi bi-clock-history"></i> Prueba de Redirección Automática
+                        </h2>
+                        
+                        <div class="alert alert-info">
+                            <h4><i class="bi bi-info-circle"></i> Prueba del Sistema de Redirección</h4>
+                            <p>Esta página simula el comportamiento de logout con redirección automática.</p>
+                        </div>
+                        
+                        <div class="text-center">
+                            <div class="mb-4">
+                                <i class="bi bi-arrow-clockwise text-primary" style="font-size: 3rem;"></i>
+                            </div>
+                            
+                            <h3>Redirigiendo en <span id="countdown" class="text-primary">5</span> segundos...</h3>
+                            
+                            <div class="progress mt-3 mb-4">
+                                <div id="progressBar" class="progress-bar bg-primary" role="progressbar" style="width: 100%"></div>
+                            </div>
+                            
+                            <p class="text-muted">Si la redirección automática funciona, irás a la página principal.</p>
+                            
+                            <div class="mt-4">
+                                <button onclick="redirectNow()" class="btn btn-primary me-2">
+                                    <i class="bi bi-arrow-right"></i> Ir Ahora
+                                </button>
+                                <button onclick="stopRedirect()" class="btn btn-secondary">
+                                    <i class="bi bi-stop"></i> Cancelar
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h5>Debug Info:</h5>
+                            <div id="debugInfo" class="bg-light p-3 rounded font-monospace small">
+                                Iniciando prueba...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let countdown = 5;
+        let timer = null;
+        let isRedirectCanceled = false;
+        const redirectUrl = '../'; // Página principal
+        
+        function log(message) {
+            const debugInfo = document.getElementById('debugInfo');
+            const timestamp = new Date().toLocaleTimeString();
+            debugInfo.innerHTML += `<br>[${timestamp}] ${message}`;
+            debugInfo.scrollTop = debugInfo.scrollHeight;
+            console.log(message);
+        }
+        
+        function updateProgress() {
+            const progressBar = document.getElementById('progressBar');
+            const percentage = (countdown / 5) * 100;
+            progressBar.style.width = percentage + '%';
+        }
+        
+        function redirectNow() {
+            if (timer) clearInterval(timer);
+            log('Redirección manual activada');
+            window.location.href = redirectUrl;
+        }
+        
+        function stopRedirect() {
+            if (timer) clearInterval(timer);
+            isRedirectCanceled = true;
+            log('Redirección cancelada por el usuario');
+            document.getElementById('countdown').textContent = 'CANCELADO';
+            document.querySelector('.progress-bar').classList.add('bg-danger');
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            log('Script iniciado');
+            log('URL de destino: ' + redirectUrl);
+            
+            timer = setInterval(function() {
+                if (isRedirectCanceled) return;
+                
+                countdown--;
+                log('Countdown: ' + countdown);
+                
+                document.getElementById('countdown').textContent = countdown;
+                updateProgress();
+                
+                if (countdown <= 0) {
+                    clearInterval(timer);
+                    log('Iniciando redirección automática...');
+                    
+                    try {
+                        window.location.href = redirectUrl;
+                        log('window.location.href ejecutado');
+                    } catch (e) {
+                        log('Error con window.location.href: ' + e.message);
+                        try {
+                            window.location.replace(redirectUrl);
+                            log('window.location.replace ejecutado');
+                        } catch (e2) {
+                            log('Error con window.location.replace: ' + e2.message);
+                            window.location.assign(redirectUrl);
+                            log('window.location.assign ejecutado');
+                        }
+                    }
+                }
+            }, 1000);
+            
+            // Backup timer
+            setTimeout(function() {
+                if (!isRedirectCanceled) {
+                    log('Timer de respaldo activado');
+                    window.location.href = redirectUrl;
+                }
+            }, 7000);
+        });
+    </script>
+</body>
+</html>
