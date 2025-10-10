@@ -11,9 +11,11 @@ El formulario de "Cerrar Sesión" en `app/views/layout/header.php` estaba intent
 ```
 
 Esto causaba el error 403 porque:
-1. El acceso directo a archivos PHP puede ser bloqueado por configuración del servidor
-2. La URL puede no resolverse correctamente dependiendo de la configuración de `PUBLIC_URL`
-3. No seguía el patrón de enrutamiento de la aplicación
+1. El acceso directo a archivos PHP (`/logout_direct.php`) puede ser bloqueado por configuración del servidor
+2. No seguía el patrón de enrutamiento de la aplicación (no pasa por el router)
+3. Puede tener problemas de permisos o configuración .htaccess
+
+**Nota**: Aunque `PUBLIC_URL` y `BASE_URL` son iguales (definidos en config.php), el problema real era el acceso directo al archivo `/logout_direct.php` en lugar de usar la ruta del router.
 
 ## Solución Implementada
 
@@ -75,6 +77,8 @@ Redirección a página principal con mensaje de éxito
 
 ## Notas Adicionales
 
-- El archivo `public/logout_direct.php` sigue existiendo pero ya no se usa
-- Se puede eliminar si no hay otras referencias a él
-- La solución es más robusta y sigue los patrones MVC de la aplicación
+- El archivo `public/logout_direct.php` sigue existiendo pero **ya no se usa en la aplicación principal**
+- Sólo se referencia en archivos de prueba (`test_logout.php`, `logout_test.html`)
+- Se puede eliminar si no se necesita para pruebas o debugging
+- La solución actual es más robusta y sigue los patrones MVC de la aplicación
+- La ruta alternativa `GET /public/logout` también está disponible si se necesita
