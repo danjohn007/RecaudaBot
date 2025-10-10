@@ -23,9 +23,9 @@ class Controller {
     }
     
     protected function redirect($url) {
-        // Use PUBLIC_URL for internal redirects
+        // Use BASE_URL for internal redirects
         if (strpos($url, 'http') !== 0) {
-            $url = PUBLIC_URL . $url;
+            $url = BASE_URL . $url;
         }
         header('Location: ' . $url);
         exit;

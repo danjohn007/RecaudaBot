@@ -122,6 +122,7 @@ $router->post('/perfil/cambiar-password', [new ProfileController(), 'updatePassw
 
 // Admin routes
 $router->get('/admin', [new AdminController(), 'dashboard']);
+$router->get('/admin/dashboard', [new AdminController(), 'dashboard']);
 $router->get('/admin/usuarios', [new AdminController(), 'users']);
 $router->get('/admin/usuarios/ver/{id}', [new AdminController(), 'viewUser']);
 $router->get('/admin/usuarios/editar/{id}', [new AdminController(), 'editUser']);
