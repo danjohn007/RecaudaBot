@@ -114,7 +114,19 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
-            <a class="navbar-brand" href="<?php echo BASE_URL; ?>">
+            <?php
+            // Smart logo link based on user authentication and role
+            $logoUrl = BASE_URL;
+            if (isset($_SESSION['user_id'])) {
+                // User is authenticated
+                if (isset($_SESSION['role']) && ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'municipal_area')) {
+                    $logoUrl = BASE_URL . '/admin/dashboard';
+                } else {
+                    $logoUrl = BASE_URL . '/perfil';
+                }
+            }
+            ?>
+            <a class="navbar-brand" href="<?php echo $logoUrl; ?>">
                 <i class="bi bi-building"></i> RecaudaBot
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
