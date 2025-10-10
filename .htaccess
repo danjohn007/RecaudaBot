@@ -1,9 +1,13 @@
 RewriteEngine On
 
+# Get the base directory dynamically
+RewriteCond %{REQUEST_URI}::$1 ^(/.+)/(.*)::\2$
+RewriteRule ^(.*) - [E=BASE:%1]
+
 # Redirigir al directorio public si no es un archivo existente
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_URI} !^/daniel/recaudabot/public/
+RewriteCond %{REQUEST_URI} !public/
 RewriteRule ^(.*)$ public/$1 [L]
 
 # Manejar archivos estáticos directamente (CSS, JS, imágenes)

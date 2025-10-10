@@ -6,7 +6,7 @@
                     <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
                 </h2>
 
-                <form method="POST" action="<?php echo PUBLIC_URL; ?>/login" id="loginForm">
+                <form method="POST" action="<?php echo BASE_URL; ?>/login" id="loginForm">
                     <div class="mb-3">
                         <label for="username" class="form-label">Usuario o Correo Electrónico</label>
                         <input type="text" class="form-control" id="username" name="username" required>
@@ -36,7 +36,7 @@
                 <hr class="my-4">
 
                 <div class="text-center">
-                    <p>¿No tienes cuenta? <a href="<?php echo PUBLIC_URL; ?>/register">Regístrate aquí</a></p>
+                    <p>¿No tienes cuenta? <a href="<?php echo BASE_URL; ?>/register">Regístrate aquí</a></p>
                 </div>
             </div>
         </div>
