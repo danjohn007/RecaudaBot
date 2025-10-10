@@ -148,42 +148,48 @@ class AuthController extends Controller {
     }
     
     public function logout() {
-        try {
-            // Log audit if user is authenticated
-            if ($this->isAuthenticated()) {
-                $this->auditLog->log($_SESSION['user_id'], 'logout');
+        // Store user info for logging before destroying session
+        $user_id = $_SESSION['user_id'] ?? null;
+        
+        // Log audit if user is authenticated
+        if ($this->isAuthenticated() && $user_id) {
+            try {
+                $this->auditLog->log($user_id, 'logout');
+            } catch (Exception $e) {
+                // Continue even if audit log fails
+                error_log("Audit log failed: " . $e->getMessage());
             }
-            
-            // Clear all session data
-            $_SESSION = array();
-            
-            // Destroy session cookie
-            if (ini_get("session.use_cookies")) {
-                $params = session_get_cookie_params();
-                setcookie(session_name(), '', time() - 42000,
-                    $params["path"], $params["domain"],
-                    $params["secure"], $params["httponly"]
-                );
-            }
-            
-            // Destroy session
-            session_destroy();
-            
-            // Start new session for flash messages
-            session_start();
-            $_SESSION['success'] = 'Sesión cerrada correctamente';
-            
-            // Direct redirect without using BASE_URL
-            $redirect_url = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . 
-                           str_replace('/public', '', dirname($_SERVER['SCRIPT_NAME']));
-            
-            header('Location: ' . $redirect_url);
-            exit();
-            
-        } catch (Exception $e) {
-            // Fallback redirect
-            header('Location: /');
-            exit();
         }
+        
+        // Clear all session data
+        $_SESSION = array();
+        
+        // Destroy session cookie
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000,
+                $params["path"], $params["domain"],
+                $params["secure"], $params["httponly"]
+            );
+        }
+        
+        // Destroy session
+        session_destroy();
+        
+        // Start new session for flash messages
+        session_start();
+        $_SESSION['success'] = 'Sesión cerrada correctamente';
+        
+        // Render logout confirmation page instead of direct redirect
+        $data = [
+            'title' => 'Sesión Cerrada - ' . APP_NAME,
+            'message' => 'Sesión cerrada correctamente',
+            'redirect_url' => BASE_URL,
+            'redirect_delay' => 2
+        ];
+        
+        $this->view('layout/header', $data);
+        $this->view('auth/logout_success', $data);
+        $this->view('layout/footer');
     }
 }
