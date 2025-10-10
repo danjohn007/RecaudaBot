@@ -11,30 +11,12 @@ define('DB_USER', 'recaudab_colon');
 define('DB_PASS', 'Danjohn007!');
 define('DB_CHARSET', 'utf8mb4');
 
-// URL Configuration - Auto-detect with fallback
-// Configuración automática con respaldo para el hosting
+// Auto-detect URL Base
 $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://';
-$host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost';
-
-// Auto-detect the correct base path
-if (isset($_SERVER['SCRIPT_NAME'])) {
-    $script_dir = dirname($_SERVER['SCRIPT_NAME']);
-    if (strpos($script_dir, '/public') !== false) {
-        // Remove /public from the path to get the base
-        $base_path = str_replace('/public', '', $script_dir);
-    } else {
-        $base_path = $script_dir;
-    }
-} else {
-    // Fallback for hosting environment
-    $base_path = '/daniel/recaudabot';
-}
-
-// Clean up the path
-$base_path = rtrim($base_path, '/');
-if (empty($base_path)) {
-    $base_path = '';
-}
+$host = $_SERVER['HTTP_HOST'];
+$script = $_SERVER['SCRIPT_NAME'];
+$base_path = str_replace('/index.php', '', $script);
+$base_path = str_replace('/public/index.php', '', $base_path);
 
 define('BASE_URL', $protocol . $host . $base_path);
 define('PUBLIC_URL', BASE_URL . '/public');
