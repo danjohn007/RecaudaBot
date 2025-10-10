@@ -175,7 +175,7 @@
                                 <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>/perfil">Mi Perfil</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <form method="POST" action="<?php echo PUBLIC_URL; ?>/logout_direct.php" style="margin: 0;">
+                                    <form method="POST" action="<?php echo BASE_URL; ?>/logout" style="margin: 0;">
                                         <button type="submit" class="dropdown-item border-0 bg-transparent w-100 text-start" style="cursor: pointer;">
                                             <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
                                         </button>
