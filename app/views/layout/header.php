@@ -174,7 +174,7 @@
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>/perfil">Mi Perfil</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>/logout">
+                                <li><a class="dropdown-item" href="<?php echo PUBLIC_URL; ?>/logout_directo.php">
                                     <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
                                 </a></li>
                             </ul>

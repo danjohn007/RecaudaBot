@@ -1,7 +1,11 @@
 RewriteEngine On
 
+# Force HTTPS for security
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
 # Allow direct access to specific PHP files
-RewriteCond %{REQUEST_URI} ^.*/(logout_direct|test_logout|debug_).*\.php$
+RewriteCond %{REQUEST_URI} ^.*/(logout_direct|logout_directo|test_logout|debug_|test_403).*\.php$
 RewriteRule ^.*$ - [L]
 
 # Handle static files directly
@@ -22,6 +26,10 @@ RewriteRule ^(.*)$ index.php [QSA,L]
     Header set X-Content-Type-Options "nosniff"
     Header set X-Frame-Options "SAMEORIGIN"
     Header set X-XSS-Protection "1; mode=block"
+    
+    # Force HTTPS for all resources (prevent Mixed Content)
+    Header set Content-Security-Policy "upgrade-insecure-requests"
+    Header set Strict-Transport-Security "max-age=31536000; includeSubDomains"
     
     # Set correct MIME types for CSS and JS files
     <FilesMatch "\.(css)$">
