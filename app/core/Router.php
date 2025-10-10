@@ -39,9 +39,12 @@ class Router {
             $uri = substr($uri, 0, $pos);
         }
         
-        // Remove base path
-        $base_path = str_replace('/index.php', '', $_SERVER['SCRIPT_NAME']);
-        $base_path = str_replace('/public/index.php', '', $base_path);
+        // Remove base path - Adjusted for hosting structure
+        // For URLs like: https://recaudabot.digital/daniel/recaudabot/public/login
+        // We need to remove /daniel/recaudabot/public to get /login
+        $script_name = $_SERVER['SCRIPT_NAME']; // Should be /daniel/recaudabot/public/index.php
+        $base_path = dirname($script_name); // Should be /daniel/recaudabot/public
+        
         if (strpos($uri, $base_path) === 0) {
             $uri = substr($uri, strlen($base_path));
         }
@@ -50,6 +53,12 @@ class Router {
         if (empty($uri) || $uri[0] !== '/') {
             $uri = '/' . $uri;
         }
+        
+        // Debug output (remove after testing)
+        // error_log("Router Debug - Original URI: " . $_SERVER['REQUEST_URI']);
+        // error_log("Router Debug - Script Name: " . $_SERVER['SCRIPT_NAME']);
+        // error_log("Router Debug - Base Path: " . $base_path);
+        // error_log("Router Debug - Processed URI: " . $uri);
         
         // Match route
         foreach ($this->routes as $route) {
