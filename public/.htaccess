@@ -5,7 +5,7 @@ RewriteCond %{HTTPS} off
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 # Allow direct access to specific PHP files
-RewriteCond %{REQUEST_URI} ^.*/(logout_direct|logout_directo|logout_simple|test_logout|debug_|test_403).*\.php$
+RewriteCond %{REQUEST_URI} ^.*/(logout_direct|logout_directo|logout_simple|logout_extremo|test_logout|debug_|test_403).*\.php$
 RewriteRule ^.*$ - [L]
 
 # Handle static files directly
@@ -28,7 +28,7 @@ RewriteRule ^(.*)$ index.php [QSA,L]
     Header set X-XSS-Protection "1; mode=block"
     
     # Force HTTPS for all resources (prevent Mixed Content)
-    Header set Content-Security-Policy "upgrade-insecure-requests"
+    Header set Content-Security-Policy "upgrade-insecure-requests; default-src 'self' https:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://code.jquery.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: https:; font-src 'self' https://cdn.jsdelivr.net"
     Header set Strict-Transport-Security "max-age=31536000; includeSubDomains"
     
     # Set correct MIME types for CSS and JS files

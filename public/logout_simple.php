@@ -23,14 +23,16 @@ header('Cache-Control: no-cache, no-store, must-revalidate');
 header('Pragma: no-cache');
 header('Expires: 0');
 
-// Definir BASE_URL si no existe
-if (!defined('BASE_URL')) {
-    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
-    $host = $_SERVER['HTTP_HOST'];
-    $path = dirname($_SERVER['REQUEST_URI']);
-    $path = rtrim($path, '/');
-    define('BASE_URL', $protocol . $host . $path);
-}
+// Definir URLs de forma más segura
+$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
+$host = $_SERVER['HTTP_HOST'];
+$path = dirname($_SERVER['REQUEST_URI']);
+$path = rtrim($path, '/');
+
+// URLs específicas
+$base_url = $protocol . $host . $path;
+$login_url = $base_url . '/login';
+$home_url = $protocol . $host; // Root del dominio para evitar 403
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -39,11 +41,13 @@ if (!defined('BASE_URL')) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sesión Cerrada</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
         .logout-card { box-shadow: 0 15px 35px rgba(50, 50, 93, 0.1); border: none; border-radius: 15px; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         .fade-in { animation: fadeIn 0.8s ease-out; }
+        .countdown { font-weight: bold; color: #0d6efd; }
     </style>
 </head>
 <body class="d-flex align-items-center">
@@ -56,14 +60,23 @@ if (!defined('BASE_URL')) {
                         <i class="bi bi-check-circle text-success" style="font-size: 3rem;"></i>
                     </div>
                     <h2 class="card-title mb-3">¡Sesión Cerrada!</h2>
-                    <p class="text-muted mb-4">Tu sesión se ha cerrado correctamente.</p>
+                    <p class="text-muted mb-3">Tu sesión se ha cerrado correctamente.</p>
+                    <p class="text-muted mb-4">
+                        Serás redirigido al login en <span id="countdown" class="countdown">3</span> segundos...
+                    </p>
                     <div class="d-grid gap-2">
-                        <a href="<?php echo BASE_URL; ?>/" class="btn btn-primary">
-                            <i class="bi bi-house"></i> Ir al Inicio
+                        <a href="<?php echo $login_url; ?>" class="btn btn-primary">
+                            <i class="bi bi-box-arrow-in-right"></i> Ir al Login Ahora
                         </a>
-                        <a href="<?php echo BASE_URL; ?>/login" class="btn btn-outline-secondary">
-                            <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+                        <a href="<?php echo $home_url; ?>" class="btn btn-outline-secondary">
+                            <i class="bi bi-house"></i> Ir al Sitio Principal
                         </a>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <small class="text-muted">
+                            <i class="bi bi-shield-check"></i> Logout realizado de forma segura
+                        </small>
                     </div>
                 </div>
             </div>
@@ -72,13 +85,55 @@ if (!defined('BASE_URL')) {
 </div>
 
 <script>
-// Auto-redirect después de 3 segundos
+// Contador regresivo
+let countdown = 3;
+const countdownElement = document.getElementById('countdown');
+
+function updateCountdown() {
+    if (countdownElement) {
+        countdownElement.textContent = countdown;
+    }
+    countdown--;
+    
+    if (countdown < 0) {
+        // Intentar redirección a login
+        try {
+            window.location.replace('<?php echo $login_url; ?>');
+        } catch (e) {
+            console.log('Error en redirección a login, intentando página principal...');
+            window.location.replace('<?php echo $home_url; ?>');
+        }
+    }
+}
+
+// Iniciar countdown
+const interval = setInterval(updateCountdown, 1000);
+
+// Redirección de emergencia múltiple
 setTimeout(function() {
-    window.location.replace('<?php echo BASE_URL; ?>/');
-}, 3000);
+    console.log('Redirección de emergencia a login...');
+    try {
+        window.location.href = '<?php echo $login_url; ?>';
+    } catch (e) {
+        console.log('Error en login, redirigiendo a home...');
+        window.location.href = '<?php echo $home_url; ?>';
+    }
+}, 4000);
+
+// Limpiar storage como medida adicional
+if (typeof(Storage) !== "undefined") {
+    localStorage.clear();
+    sessionStorage.clear();
+}
+
+// Limpiar cookies adicionales
+document.cookie.split(";").forEach(function(c) { 
+    document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+});
+
+console.log('Logout simple completado - Redirigiendo a login...');
 </script>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
