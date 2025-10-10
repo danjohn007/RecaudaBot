@@ -9,7 +9,7 @@ echo "<style>
     .success { color: green; }
     .error { color: red; }
     .warning { color: orange; }
-    pre { background: #e9ecef; padding: 10px; border-radius: 5px; }
+    pre { background: #e9ecef; padding: 10px; border-radius: 5px; overflow-x: auto; }
 </style>";
 
 echo "<div class='debug-box'>";
@@ -20,6 +20,7 @@ echo "SCRIPT_NAME: " . ($_SERVER['SCRIPT_NAME'] ?? 'No definido') . "\n";
 echo "REQUEST_METHOD: " . ($_SERVER['REQUEST_METHOD'] ?? 'No definido') . "\n";
 echo "HTTP_HOST: " . ($_SERVER['HTTP_HOST'] ?? 'No definido') . "\n";
 echo "DOCUMENT_ROOT: " . ($_SERVER['DOCUMENT_ROOT'] ?? 'No definido') . "\n";
+echo "PHP_SELF: " . ($_SERVER['PHP_SELF'] ?? 'No definido') . "\n";
 echo "</pre>";
 echo "</div>";
 
@@ -33,7 +34,9 @@ echo "</div>";
 
 echo "<div class='debug-box'>";
 echo "<h3>Simulación del Router</h3>";
-$uri = $_SERVER['REQUEST_URI'] ?? '';
+$original_uri = $_SERVER['REQUEST_URI'] ?? '';
+$uri = $original_uri;
+
 echo "<p><strong>URI Original:</strong> $uri</p>";
 
 // Simular la lógica del router
@@ -42,30 +45,63 @@ if (($pos = strpos($uri, '?')) !== false) {
 }
 
 $script_name = $_SERVER['SCRIPT_NAME'] ?? '';
-$base_path = dirname($script_name);
+$script_dir = dirname($script_name);
 
 echo "<p><strong>Script Name:</strong> $script_name</p>";
-echo "<p><strong>Base Path:</strong> $base_path</p>";
+echo "<p><strong>Script Dir:</strong> $script_dir</p>";
 
-if (strpos($uri, $base_path) === 0) {
-    $uri = substr($uri, strlen($base_path));
+if (strpos($uri, $script_dir) === 0) {
+    $uri = substr($uri, strlen($script_dir));
 }
 
 if (empty($uri) || $uri[0] !== '/') {
     $uri = '/' . $uri;
 }
 
-echo "<p><strong>URI Procesada:</strong> $uri</p>";
+// Remove trailing slash (except for root)
+if (strlen($uri) > 1 && substr($uri, -1) === '/') {
+    $uri = substr($uri, 0, -1);
+}
+
+echo "<p><strong>URI Procesada Final:</strong> <span class='success'>$uri</span></p>";
+
+// Mostrar qué ruta coincidiría
+$routes = [
+    '/' => 'HomeController::index',
+    '/login' => 'AuthController::showLogin',
+    '/admin' => 'AdminController::dashboard',
+    '/register' => 'AuthController::showRegister',
+    '/profile' => 'ProfileController::index'
+];
+
+$matched = false;
+foreach ($routes as $route => $controller) {
+    if ($route === $uri) {
+        echo "<p><strong class='success'>✓ Ruta coincidente:</strong> $route → $controller</p>";
+        $matched = true;
+        break;
+    }
+}
+
+if (!$matched) {
+    echo "<p><strong class='error'>✗ No hay coincidencia de ruta para:</strong> $uri</p>";
+    echo "<p><strong>Rutas disponibles:</strong></p>";
+    echo "<ul>";
+    foreach ($routes as $route => $controller) {
+        echo "<li>$route</li>";
+    }
+    echo "</ul>";
+}
 echo "</div>";
 
 echo "<div class='debug-box'>";
-echo "<h3>Rutas de Prueba</h3>";
-echo "<p>Prueba estos enlaces para verificar el enrutamiento:</p>";
+echo "<h3>Test directo de rutas</h3>";
+echo "<p>Haz clic en estos enlaces para probar el enrutamiento:</p>";
 echo "<ul>";
-echo "<li><a href='" . PUBLIC_URL . "/login'>Login</a> (debería mostrar /login)</li>";
-echo "<li><a href='" . PUBLIC_URL . "/admin'>Admin Dashboard</a> (debería mostrar /admin)</li>";
-echo "<li><a href='" . PUBLIC_URL . "/'>Inicio</a> (debería mostrar /)</li>";
-echo "<li><a href='" . PUBLIC_URL . "/profile'>Perfil</a> (debería mostrar /profile)</li>";
+echo "<li><a href='" . PUBLIC_URL . "/' target='_blank'>Inicio (/)</a></li>";
+echo "<li><a href='" . PUBLIC_URL . "/login' target='_blank'>Login (/login)</a></li>";
+echo "<li><a href='" . PUBLIC_URL . "/register' target='_blank'>Registro (/register)</a></li>";
+echo "<li><a href='" . PUBLIC_URL . "/admin' target='_blank'>Admin (/admin)</a></li>";
 echo "</ul>";
 echo "</div>";
 
@@ -83,22 +119,15 @@ echo "</pre>";
 echo "</div>";
 
 echo "<div class='debug-box'>";
-echo "<h3>Archivos de Vista</h3>";
-echo "<p>Verificando si existen los archivos de vista principales:</p>";
-$viewFiles = [
-    'auth/login.php',
-    'admin/dashboard.php',
-    'home/index.php',
-    'profile/index.php'
-];
-
-foreach ($viewFiles as $file) {
-    $fullPath = __DIR__ . '/../app/views/' . $file;
-    $exists = file_exists($fullPath);
-    $status = $exists ? '<span class="success">✓ Existe</span>' : '<span class="error">✗ No existe</span>';
-    echo "<p>$file: $status</p>";
+echo "<h3>Test del archivo index.php</h3>";
+$indexPath = __DIR__ . '/index.php';
+if (file_exists($indexPath)) {
+    echo "<p class='success'>✓ index.php existe en: $indexPath</p>";
+    echo "<p>Tamaño: " . filesize($indexPath) . " bytes</p>";
+} else {
+    echo "<p class='error'>✗ index.php no encontrado en: $indexPath</p>";
 }
 echo "</div>";
 
-echo "<p><a href='" . BASE_URL . "'>Volver al Inicio</a></p>";
+echo "<p><a href='" . PUBLIC_URL . "'>Ir al Inicio</a></p>";
 ?>

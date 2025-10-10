@@ -39,14 +39,13 @@ class Router {
             $uri = substr($uri, 0, $pos);
         }
         
-        // Remove base path - Adjusted for hosting structure
-        // For URLs like: https://recaudabot.digital/daniel/recaudabot/public/login
-        // We need to remove /daniel/recaudabot/public to get /login
-        $script_name = $_SERVER['SCRIPT_NAME']; // Should be /daniel/recaudabot/public/index.php
-        $base_path = dirname($script_name); // Should be /daniel/recaudabot/public
-        
-        if (strpos($uri, $base_path) === 0) {
-            $uri = substr($uri, strlen($base_path));
+        // Normalize URI - Remove base path more reliably
+        // For hosting structure like /daniel/recaudabot/public/
+        if (isset($_SERVER['SCRIPT_NAME'])) {
+            $script_dir = dirname($_SERVER['SCRIPT_NAME']);
+            if (strpos($uri, $script_dir) === 0) {
+                $uri = substr($uri, strlen($script_dir));
+            }
         }
         
         // Ensure URI starts with /
@@ -54,11 +53,10 @@ class Router {
             $uri = '/' . $uri;
         }
         
-        // Debug output (remove after testing)
-        // error_log("Router Debug - Original URI: " . $_SERVER['REQUEST_URI']);
-        // error_log("Router Debug - Script Name: " . $_SERVER['SCRIPT_NAME']);
-        // error_log("Router Debug - Base Path: " . $base_path);
-        // error_log("Router Debug - Processed URI: " . $uri);
+        // Remove trailing slash (except for root)
+        if (strlen($uri) > 1 && substr($uri, -1) === '/') {
+            $uri = substr($uri, 0, -1);
+        }
         
         // Match route
         foreach ($this->routes as $route) {
