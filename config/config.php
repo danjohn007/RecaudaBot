@@ -11,15 +11,10 @@ define('DB_USER', 'recaudab_colon');
 define('DB_PASS', 'Danjohn007!');
 define('DB_CHARSET', 'utf8mb4');
 
-// Auto-detect URL Base
-$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://';
-$host = $_SERVER['HTTP_HOST'];
-$script = $_SERVER['SCRIPT_NAME'];
-$base_path = str_replace('/index.php', '', $script);
-$base_path = str_replace('/public/index.php', '', $base_path);
-
-define('BASE_URL', $protocol . $host . $base_path);
-define('PUBLIC_URL', BASE_URL . '/public');
+// URL Configuration - Fixed for hosting environment
+// Configuración fija para evitar problemas de detección automática
+define('BASE_URL', 'https://recaudabot.digital/daniel/1');
+define('PUBLIC_URL', 'https://recaudabot.digital/daniel/1/public');
 
 // Application Settings
 define('APP_NAME', 'RecaudaBot');

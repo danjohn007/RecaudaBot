@@ -1,5 +1,12 @@
 RewriteEngine On
 
-# Redirect to public directory
-RewriteCond %{REQUEST_URI} !^/public/
+# Manejar archivos estáticos directamente (CSS, JS, imágenes)
+RewriteCond %{REQUEST_URI} \.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$
+RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^(.*)$ public/$1 [L]
+
+# Redireccionar al directorio public solo si el archivo no existe y no es una ruta de administración
+RewriteCond %{REQUEST_URI} !^/public/
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ public/index.php [QSA,L]

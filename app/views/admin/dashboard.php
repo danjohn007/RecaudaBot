@@ -200,143 +200,251 @@
     </div>
 </div>
 
+<!-- Cargar Chart.js con verificación completa -->
 <script>
-// Chart for revenue by type
-<?php if (!empty($stats['revenue_by_type'])): ?>
-const ctx = document.getElementById('revenueChart');
-const revenueData = <?php echo json_encode($stats['revenue_by_type']); ?>;
-
-const labels = revenueData.map(item => {
-    const types = {
-        'property_tax': 'Impuesto Predial',
-        'business_license': 'Licencias',
-        'traffic_fine': 'Multas Tránsito',
-        'civic_fine': 'Multas Cívicas'
-    };
-    return types[item.payment_type] || item.payment_type;
-});
-
-const amounts = revenueData.map(item => parseFloat(item.total));
-
-new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: labels,
-        datasets: [{
-            label: 'Recaudación ($)',
-            data: amounts,
-            backgroundColor: [
-                'rgba(54, 162, 235, 0.5)',
-                'rgba(75, 192, 192, 0.5)',
-                'rgba(255, 206, 86, 0.5)',
-                'rgba(255, 99, 132, 0.5)'
-            ],
-            borderColor: [
-                'rgba(54, 162, 235, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(255, 99, 132, 1)'
-            ],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        responsive: true,
-        scales: {
-            y: {
-                beginAtZero: true
-            }
+// Función para cargar Chart.js dinámicamente si no está disponible
+function loadChartJS() {
+    return new Promise((resolve, reject) => {
+        if (typeof Chart !== 'undefined') {
+            resolve();
+            return;
         }
-    }
-});
-<?php endif; ?>
+        
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js';
+        script.onload = () => {
+            console.log('Chart.js cargado exitosamente');
+            resolve();
+        };
+        script.onerror = () => {
+            console.error('Error al cargar Chart.js');
+            reject();
+        };
+        document.head.appendChild(script);
+    });
+}
 
-// Chart for pending obligations distribution (Pie Chart)
-const obligationsCtx = document.getElementById('obligationsChart');
-new Chart(obligationsCtx, {
-    type: 'doughnut',
-    data: {
-        labels: ['Impuestos Prediales', 'Multas de Tránsito', 'Multas Cívicas', 'Licencias'],
-        datasets: [{
-            label: 'Monto Pendiente ($)',
-            data: [
-                <?php echo isset($stats['pending_taxes_amount']) ? $stats['pending_taxes_amount'] : 0; ?>,
-                <?php echo isset($stats['pending_traffic_fines_amount']) ? $stats['pending_traffic_fines_amount'] : 0; ?>,
-                <?php echo isset($stats['pending_civic_fines_amount']) ? $stats['pending_civic_fines_amount'] : 0; ?>,
-                <?php echo isset($stats['pending_licenses_amount']) ? $stats['pending_licenses_amount'] : 0; ?>
-            ],
-            backgroundColor: [
-                'rgba(54, 162, 235, 0.7)',
-                'rgba(255, 206, 86, 0.7)',
-                'rgba(255, 99, 132, 0.7)',
-                'rgba(75, 192, 192, 0.7)'
-            ],
-            borderColor: [
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(255, 99, 132, 1)',
-                'rgba(75, 192, 192, 1)'
-            ],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                position: 'bottom',
-            },
-            tooltip: {
-                callbacks: {
-                    label: function(context) {
-                        let label = context.label || '';
-                        if (label) {
-                            label += ': ';
+// Función principal para inicializar las gráficas
+async function initializeCharts() {
+    try {
+        // Asegurar que Chart.js esté cargado
+        await loadChartJS();
+        
+        console.log('Inicializando gráficas...');
+        console.log('Chart disponible:', typeof Chart);
+
+        // Chart for revenue by type
+        <?php if (!empty($stats['revenue_by_type'])): ?>
+        const revenueCtx = document.getElementById('revenueChart');
+        if (revenueCtx) {
+            console.log('Creando gráfica de ingresos por tipo...');
+            const revenueData = <?php echo json_encode($stats['revenue_by_type']); ?>;
+            console.log('Datos de ingresos:', revenueData);
+
+            const labels = revenueData.map(item => {
+                const types = {
+                    'property_tax': 'Impuesto Predial',
+                    'business_license': 'Licencias',
+                    'traffic_fine': 'Multas Tránsito',
+                    'civic_fine': 'Multas Cívicas'
+                };
+                return types[item.payment_type] || item.payment_type;
+            });
+
+            const amounts = revenueData.map(item => parseFloat(item.total));
+
+            new Chart(revenueCtx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Recaudación ($)',
+                        data: amounts,
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(75, 192, 192, 0.5)',
+                            'rgba(255, 206, 86, 0.5)',
+                            'rgba(255, 99, 132, 0.5)'
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(255, 99, 132, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
                         }
-                        label += '$' + context.parsed.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-                        return label;
                     }
                 }
-            }
+            });
+            console.log('✓ Gráfica de ingresos creada');
+        } else {
+            console.error('Canvas revenueChart no encontrado');
         }
-    }
-});
+        <?php else: ?>
+        console.log('No hay datos de revenue_by_type para mostrar');
+        // Crear gráfica vacía como placeholder
+        const revenueCtxEmpty = document.getElementById('revenueChart');
+        if (revenueCtxEmpty) {
+            new Chart(revenueCtxEmpty, {
+                type: 'bar',
+                data: {
+                    labels: ['Sin datos'],
+                    datasets: [{
+                        label: 'Recaudación ($)',
+                        data: [0],
+                        backgroundColor: ['rgba(200, 200, 200, 0.5)'],
+                        borderColor: ['rgba(200, 200, 200, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'No hay datos disponibles'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+        <?php endif; ?>
 
-// Chart for revenue trend (Line Chart)
-const trendCtx = document.getElementById('trendChart');
-new Chart(trendCtx, {
-    type: 'line',
-    data: {
-        labels: ['Mes -5', 'Mes -4', 'Mes -3', 'Mes -2', 'Mes -1', 'Mes Actual'],
-        datasets: [{
-            label: 'Recaudación Total ($)',
-            data: <?php echo isset($stats['monthly_trend']) ? json_encode($stats['monthly_trend']) : '[0, 0, 0, 0, 0, ' . ($stats['month_revenue'] ?? 0) . ']'; ?>,
-            borderColor: 'rgba(75, 192, 192, 1)',
-            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-            fill: true,
-            tension: 0.4
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                display: true,
-                position: 'top'
-            }
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                ticks: {
-                    callback: function(value) {
-                        return '$' + value.toLocaleString();
+        // Chart for pending obligations distribution (Pie Chart)
+        const obligationsCtx = document.getElementById('obligationsChart');
+        if (obligationsCtx) {
+            console.log('Creando gráfica de obligaciones pendientes...');
+            new Chart(obligationsCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Impuestos Prediales', 'Multas de Tránsito', 'Multas Cívicas', 'Licencias'],
+                    datasets: [{
+                        label: 'Monto Pendiente ($)',
+                        data: [
+                            <?php echo isset($stats['pending_taxes_amount']) ? $stats['pending_taxes_amount'] : 0; ?>,
+                            <?php echo isset($stats['pending_traffic_fines_amount']) ? $stats['pending_traffic_fines_amount'] : 0; ?>,
+                            <?php echo isset($stats['pending_civic_fines_amount']) ? $stats['pending_civic_fines_amount'] : 0; ?>,
+                            <?php echo isset($stats['pending_licenses_amount']) ? $stats['pending_licenses_amount'] : 0; ?>
+                        ],
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(75, 192, 192, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(75, 192, 192, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += '$' + context.parsed.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                                    return label;
+                                }
+                            }
+                        }
                     }
                 }
-            }
+            });
+            console.log('✓ Gráfica de obligaciones creada');
+        } else {
+            console.error('Canvas obligationsChart no encontrado');
         }
+
+        // Chart for revenue trend (Line Chart)
+        const trendCtx = document.getElementById('trendChart');
+        if (trendCtx) {
+            console.log('Creando gráfica de tendencias...');
+            new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Mes -5', 'Mes -4', 'Mes -3', 'Mes -2', 'Mes -1', 'Mes Actual'],
+                    datasets: [{
+                        label: 'Recaudación Total ($)',
+                        data: <?php echo isset($stats['monthly_trend']) ? json_encode($stats['monthly_trend']) : '[0, 0, 0, 0, 0, ' . ($stats['month_revenue'] ?? 0) . ']'; ?>,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            console.log('✓ Gráfica de tendencias creada');
+        } else {
+            console.error('Canvas trendChart no encontrado');
+        }
+
+        console.log('✓ Todas las gráficas inicializadas correctamente');
+        
+    } catch (error) {
+        console.error('Error al inicializar gráficas:', error);
+        
+        // Mostrar mensaje de error en las gráficas
+        const canvases = ['revenueChart', 'obligationsChart', 'trendChart'];
+        canvases.forEach(canvasId => {
+            const canvas = document.getElementById(canvasId);
+            if (canvas) {
+                const parent = canvas.parentElement;
+                parent.innerHTML = '<div class="alert alert-warning">Error al cargar la gráfica. <button onclick="initializeCharts()" class="btn btn-sm btn-primary">Reintentar</button></div>';
+            }
+        });
     }
-});
+}
+
+// Inicializar cuando el DOM esté listo
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeCharts);
+} else {
+    initializeCharts();
+}
 </script>
