@@ -183,9 +183,9 @@ class AuthController extends Controller {
         // Render logout confirmation page instead of direct redirect
         $data = [
             'title' => 'Sesión Cerrada - ' . APP_NAME,
-            'message' => 'Sesión cerrada correctamente',
+            'message' => 'Has cerrado sesión correctamente. Serás redirigido a la página principal donde puedes registrarte o iniciar sesión nuevamente.',
             'redirect_url' => BASE_URL,
-            'redirect_delay' => 2
+            'redirect_delay' => 3
         ];
         
         $this->view('layout/header', $data);

@@ -8,19 +8,19 @@
                 
                 <h2 class="card-title text-success mb-3">¡Sesión Cerrada!</h2>
                 <p class="card-text text-muted mb-4">
-                    Has cerrado sesión correctamente. Gracias por usar RecaudaBot.
+                    <?php echo $message ?? 'Has cerrado sesión correctamente. Serás redirigido a la página principal donde puedes registrarte o iniciar sesión.'; ?>
                 </p>
                 
                 <div class="mb-4">
                     <div class="spinner-border spinner-border-sm text-primary me-2" role="status">
                         <span class="visually-hidden">Redirigiendo...</span>
                     </div>
-                    <small class="text-muted">Redirigiendo al inicio en <span id="countdown"><?php echo $redirect_delay ?? 3; ?></span> segundos...</small>
+                    <small class="text-muted">Redirigiendo a la página principal en <span id="countdown"><?php echo $redirect_delay ?? 3; ?></span> segundos...</small>
                 </div>
                 
                 <div class="d-grid gap-2">
-                    <a href="<?php echo $redirect_url ?? BASE_URL; ?>" class="btn btn-primary">
-                        <i class="bi bi-house"></i> Ir al Inicio Ahora
+                    <a href="<?php echo BASE_URL; ?>" class="btn btn-primary">
+                        <i class="bi bi-house"></i> Ir a la Página Principal
                     </a>
                     <a href="<?php echo BASE_URL; ?>/login" class="btn btn-outline-secondary">
                         <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión Nuevamente
@@ -35,7 +35,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     let countdown = <?php echo $redirect_delay ?? 3; ?>;
     const countdownElement = document.getElementById('countdown');
-    const redirectUrl = '<?php echo $redirect_url ?? BASE_URL; ?>';
+    const redirectUrl = '<?php echo BASE_URL; ?>';
     
     const timer = setInterval(function() {
         countdown--;
