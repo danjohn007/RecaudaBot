@@ -39,13 +39,11 @@ class Router {
             $uri = substr($uri, 0, $pos);
         }
         
-        // Normalize URI - Remove base path more reliably
-        // For hosting structure like /daniel/recaudabot/public/
-        if (isset($_SERVER['SCRIPT_NAME'])) {
-            $script_dir = dirname($_SERVER['SCRIPT_NAME']);
-            if (strpos($uri, $script_dir) === 0) {
-                $uri = substr($uri, strlen($script_dir));
-            }
+        // Remove base path
+        $base_path = str_replace('/index.php', '', $_SERVER['SCRIPT_NAME']);
+        $base_path = str_replace('/public/index.php', '', $base_path);
+        if (strpos($uri, $base_path) === 0) {
+            $uri = substr($uri, strlen($base_path));
         }
         
         // Ensure URI starts with /
