@@ -142,5 +142,5 @@ try {
 }
 
 echo "<hr>";
-echo "<p><a href='" . BASE_URL . "/admin/dashboard'>Volver al Dashboard</a></p>";
+echo "<p><a href='" . BASE_URL . "/public/admin'>Volver al Dashboard</a></p>";
 ?>

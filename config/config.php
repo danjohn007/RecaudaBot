@@ -13,8 +13,8 @@ define('DB_CHARSET', 'utf8mb4');
 
 // URL Configuration - Fixed for hosting environment
 // Configuración fija para evitar problemas de detección automática
-define('BASE_URL', 'https://recaudabot.digital/daniel/1');
-define('PUBLIC_URL', 'https://recaudabot.digital/daniel/1/public');
+define('BASE_URL', 'https://recaudabot.digital/daniel/recaudabot');
+define('PUBLIC_URL', 'https://recaudabot.digital/daniel/recaudabot/public');
 
 // Application Settings
 define('APP_NAME', 'RecaudaBot');

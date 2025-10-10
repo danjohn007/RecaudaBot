@@ -67,5 +67,5 @@ echo "<li>La configuración de PUBLIC_URL está siendo modificada en otro lugar<
 echo "</ul>";
 echo "</div>";
 
-echo "<p><a href='" . BASE_URL . "/admin/dashboard'>Volver al Dashboard</a></p>";
+echo "<p><a href='" . BASE_URL . "/public/admin'>Volver al Dashboard</a></p>";
 ?>

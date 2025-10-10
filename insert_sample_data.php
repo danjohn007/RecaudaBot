@@ -164,7 +164,7 @@ try {
     
     echo "<h3>Datos insertados exitosamente!</h3>";
     echo "<p>Ahora las gráficas del dashboard deberían mostrar información.</p>";
-    echo "<p><a href='" . BASE_URL . "/admin/dashboard' class='btn btn-primary'>Ver Dashboard</a></p>";
+    echo "<p><a href='" . BASE_URL . "/public/admin' class='btn btn-primary'>Ver Dashboard</a></p>";
     
 } catch (Exception $e) {
     echo "<p style='color: red;'>Error: " . $e->getMessage() . "</p>";
