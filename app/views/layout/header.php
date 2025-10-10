@@ -120,7 +120,7 @@
             if (isset($_SESSION['user_id'])) {
                 // User is authenticated
                 if (isset($_SESSION['role']) && ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'municipal_area')) {
-                    $logoUrl = BASE_URL . '/admin/dashboard';
+                    $logoUrl = BASE_URL . '/admin';
                 } else {
                     $logoUrl = BASE_URL . '/perfil';
                 }
