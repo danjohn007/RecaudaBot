@@ -6,7 +6,7 @@
                     <i class="bi bi-person-plus"></i> Registrarse
                 </h2>
 
-                <form method="POST" action="<?php echo BASE_URL; ?>/register" id="registerForm">
+                <form method="POST" action="<?php echo PUBLIC_URL; ?>/register" id="registerForm">
                     <div class="mb-3">
                         <label for="email" class="form-label">Correo Electrónico *</label>
                         <input type="email" class="form-control" id="email" name="email" 
@@ -81,7 +81,7 @@
                 <hr class="my-4">
 
                 <div class="text-center">
-                    <p>¿Ya tienes cuenta? <a href="<?php echo BASE_URL; ?>/login">Inicia sesión aquí</a></p>
+                    <p>¿Ya tienes cuenta? <a href="<?php echo PUBLIC_URL; ?>/login">Inicia sesión aquí</a></p>
                 </div>
             </div>
         </div>
