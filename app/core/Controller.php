@@ -23,7 +23,11 @@ class Controller {
     }
     
     protected function redirect($url) {
-        header('Location: ' . BASE_URL . $url);
+        // Use PUBLIC_URL for internal redirects
+        if (strpos($url, 'http') !== 0) {
+            $url = PUBLIC_URL . $url;
+        }
+        header('Location: ' . $url);
         exit;
     }
     
@@ -38,7 +42,7 @@ class Controller {
     }
     
     protected function hasRole($role) {
-        return isset($_SESSION['user_role']) && $_SESSION['user_role'] === $role;
+        return isset($_SESSION['role']) && $_SESSION['role'] === $role;
     }
     
     protected function requireRole($role) {

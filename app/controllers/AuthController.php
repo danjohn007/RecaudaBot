@@ -39,7 +39,7 @@ class AuthController extends Controller {
             $_SESSION['username'] = $user['username'];
             $_SESSION['full_name'] = $user['full_name'];
             $_SESSION['email'] = $user['email'];
-            $_SESSION['user_role'] = $user['role'];
+            $_SESSION['role'] = $user['role']; // Consistent key
             
             $this->auditLog->log($user['id'], 'login');
             
