@@ -148,42 +148,40 @@ class AuthController extends Controller {
     }
     
     public function logout() {
-        // Follow the exact same pattern as login() method which works perfectly
+        // Store user info for logging before destroying session
+        $user_id = $_SESSION['user_id'] ?? null;
         
-        if ($this->isAuthenticated()) {
-            // Store user info for logging before destroying session
-            $user_id = $_SESSION['user_id'] ?? null;
-            
-            // Log audit if user is authenticated
-            if ($user_id) {
-                try {
-                    $this->auditLog->log($user_id, 'logout');
-                } catch (Exception $e) {
-                    // Continue even if audit log fails
-                    error_log("Audit log failed: " . $e->getMessage());
-                }
+        // Log audit if user is authenticated
+        if ($user_id) {
+            try {
+                $this->auditLog->log($user_id, 'logout');
+            } catch (Exception $e) {
+                // Continue even if audit log fails
+                error_log("Audit log failed: " . $e->getMessage());
             }
-            
-            // Clear all session data
-            $_SESSION = array();
-            
-            // Destroy session cookie
-            if (ini_get("session.use_cookies")) {
-                $params = session_get_cookie_params();
-                setcookie(session_name(), '', time() - 42000,
-                    $params["path"], $params["domain"],
-                    $params["secure"], $params["httponly"]
-                );
-            }
-            
-            // Destroy session
-            session_destroy();
-            
-            // Redirect to home page (same pattern as successful login redirect)
-            $this->redirect('/');
-        } else {
-            // No session active (same pattern as failed login redirect)
-            $this->redirect('/login');
         }
+        
+        // Clear all session data
+        $_SESSION = array();
+        
+        // Destroy session cookie
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000,
+                $params["path"], $params["domain"],
+                $params["secure"], $params["httponly"]
+            );
+        }
+        
+        // Destroy session
+        session_destroy();
+        
+        // Prevent browser caching of logout response
+        header('Cache-Control: no-cache, no-store, must-revalidate');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+        
+        // Redirect to home page after successful logout and session cleanup
+        $this->redirect('/');
     }
 }
