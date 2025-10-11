@@ -19,13 +19,10 @@ header('Pragma: no-cache');
 header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
 header('Clear-Site-Data: "cache", "cookies", "storage"');
 
-// Obtener URL del login de forma segura
-$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
-$host = $_SERVER['HTTP_HOST'];
-$path = dirname($_SERVER['REQUEST_URI']);
-$login_url = $protocol . $host . $path . '/login';
+// Load config to get BASE_URL
+require_once __DIR__ . '/../config/config.php';
 
-// Redirección inmediata sin página intermedia
-header("Location: $login_url");
+// Redirect to login page
+header("Location: " . BASE_URL . "/login");
 exit();
 ?>
