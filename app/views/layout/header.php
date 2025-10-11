@@ -114,7 +114,7 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
-            <a class="navbar-brand" href="<?php echo BASE_URL; ?>/">
+            <a class="navbar-brand" href="<?php echo BASE_URL; ?>">
                 <i class="bi bi-building"></i> RecaudaBot
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -182,7 +182,7 @@
                                     <i class="bi bi-person"></i> Mi Perfil
                                 </a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="<?php echo PUBLIC_URL; ?>/logout_extremo.php">
+                                <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>/logout">
                                     <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
                                 </a></li>
                             </ul>
