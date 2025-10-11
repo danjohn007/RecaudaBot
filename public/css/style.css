@@ -7,6 +7,7 @@
     --danger-color: #dc3545;
     --warning-color: #ffc107;
     --info-color: #0dcaf0;
+    --light-color: #f8f9fa;
 }
 
 body {
@@ -220,7 +221,7 @@ footer a:hover {
 
 /* Jumbotron */
 .jumbotron {
-    background-color: #f8f9fa;
+    background-color: var(--light-color);
     border-radius: 1rem;
 }
 
