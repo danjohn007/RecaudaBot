@@ -176,13 +176,12 @@ class AuthController extends Controller {
         // Destroy session
         session_destroy();
         
-        // Add cache control headers to prevent browser caching
+        // Prevent browser from caching the logout response to ensure proper logout behavior
         header('Cache-Control: no-cache, no-store, must-revalidate');
         header('Pragma: no-cache');
         header('Expires: 0');
         
-        // Redirect to home page - use direct header instead of redirect() method
-        header('Location: ' . BASE_URL . '/');
-        exit();
+        // Redirect to home page
+        $this->redirect('/');
     }
 }
