@@ -114,7 +114,7 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
-            <a class="navbar-brand" href="<?php echo BASE_URL; ?>">
+            <a class="navbar-brand" href="<?php echo BASE_URL; ?>/">
                 <i class="bi bi-building"></i> RecaudaBot
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
