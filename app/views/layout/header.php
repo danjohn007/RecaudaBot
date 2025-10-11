@@ -182,7 +182,7 @@
                                     <i class="bi bi-person"></i> Mi Perfil
                                 </a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="<?php echo PUBLIC_URL; ?>/logout_extremo.php">
+                                <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>/logout">
                                     <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
                                 </a></li>
                             </ul>
